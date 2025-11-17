@@ -3,6 +3,7 @@ import ExtraFeatures from "@/components/ExtraFeatures";
 import Feature from "@/components/Feature";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
+import OnboardingModal from "@/components/OnboardingModal";
 import Image from "next/image";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
       <ExtraFeatures></ExtraFeatures>
       <About></About>
       <Footer></Footer>
+      <OnboardingModal></OnboardingModal>
     </div>
   );
 }
