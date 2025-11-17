@@ -1,5 +1,5 @@
-import ChatViewLg from "@/components/ChatViewLg";
-import ChatViewSm from "@/components/ChatViewSm";
+import ChatViewLg from "@/components/chat-lg/ChatViewLg";
+import ChatViewSm from "@/components/chat-sm/ChatViewSm";
 import React from "react";
 
 function page() {
