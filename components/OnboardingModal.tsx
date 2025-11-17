@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function OnboardingModal() {
-  const [isOpen, setOpen] = useState(true);
+  const [isOpen, setOpen] = useState(false);
   const modalRef: any = useRef("");
 
   const handleClickOutsideModal = (event: any) => {
