@@ -1,6 +1,9 @@
+"use client";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Provider } from "react-redux";
+import store from "@/services/store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,10 +15,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Heaven Chat",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <Provider store={store}>
+        <body>{children}</body>
+      </Provider>
     </html>
   );
 }
