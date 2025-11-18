@@ -46,7 +46,7 @@ export default function Home() {
       <Feature></Feature>
       <ExtraFeatures></ExtraFeatures>
       <About></About>
-      <Footer></Footer>
+      <Footer handleGoogleSignIn={handleGoogleSignIn}></Footer>
       {newUser && <OnboardingModal newUser={newUser}></OnboardingModal>}
     </div>
   );
