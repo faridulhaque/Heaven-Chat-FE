@@ -1,7 +1,11 @@
 import Image from "next/image";
 import React from "react";
 
-function Footer() {
+type FooterComponent = {
+  handleGoogleSignIn: () => any;
+};
+
+function Footer({ handleGoogleSignIn }: FooterComponent) {
   return (
     <div className="bg-black w-full relative mt-20 py-10 flex flex-col items-center">
       <div className="w-3/12 sm:w-2/12 h-1/4 bg-[#FF5F5F] blur-2xl opacity-50 rounded-2xl absolute bottom-0 right-0"></div>
@@ -28,7 +32,10 @@ function Footer() {
       </h2>
 
       <div className="w-full flex items-center justify-center mt-6">
-        <button className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm">
+        <button
+          onClick={handleGoogleSignIn}
+          className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"
+        >
           <Image
             src="/assets/google-icon.webp"
             alt="google"

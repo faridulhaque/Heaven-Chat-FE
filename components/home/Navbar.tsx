@@ -1,8 +1,15 @@
+"use client";
+import { signInWithGoogle } from "@/services/firebase.config";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function Navbar() {
+type NavbarComponent = {
+  handleGoogleSignIn: () => any;
+};
+
+export default function Navbar({ handleGoogleSignIn }: NavbarComponent) {
   return (
     <div className="w-11/12 h-20 text-white flex items-center justify-between mx-auto font-inter relative">
       <div className="w-3/12 h-full flex items-center">
@@ -27,7 +34,10 @@ export default function Navbar() {
       </div>
 
       <div className="lg:w-3/12 w-auto flex items-center justify-end h-full">
-        <button className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm">
+        <button
+          onClick={handleGoogleSignIn}
+          className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"
+        >
           <Image
             src="/assets/google-icon.webp"
             alt="google"

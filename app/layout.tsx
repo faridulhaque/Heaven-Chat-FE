@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Provider } from "react-redux";
 import store from "@/services/store";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,9 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Provider store={store}>
-        <body>{children}</body>
-      </Provider>
+      <body>
+        <Toaster position="top-center" reverseOrder={false} />
+        <Provider store={store}>{children}</Provider>
+      </body>
     </html>
   );
 }

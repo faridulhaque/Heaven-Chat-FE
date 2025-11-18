@@ -1,8 +1,20 @@
 "use client";
+import { useRegisterMutation } from "@/services/queries/authApi";
+import { registerPayload } from "@/services/types";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
-export default function OnboardingModal() {
+type OnboardingModalType = {
+  newUser: { name: string; email: string } | null;
+};
+
+export default function OnboardingModal({ newUser }: OnboardingModalType) {
+  const router = useRouter();
+  const [avatar, setAvatar] = useState("");
+  const [register, { isLoading: registering }] = useRegisterMutation();
+
   const [isOpen, setOpen] = useState(false);
   const modalRef: any = useRef("");
 
@@ -28,6 +40,21 @@ export default function OnboardingModal() {
       document.body.style.overflowY = "hidden";
     }
   }, [isOpen]);
+
+  const handleOnboard = async () => {
+    const res: any = await register({
+      ...newUser,
+      avatar,
+    } as registerPayload);
+    if (res?.data?.token) {
+      localStorage.setItem("token", res.data.token);
+      toast.success("Successfully Onboarded");
+      router.push("/chat");
+    } else {
+      toast.error("Failed to register new user");
+      router.push("/");
+    }
+  };
 
   return (
     <>
@@ -89,7 +116,10 @@ export default function OnboardingModal() {
               </div>
 
               <div className="flex items-center justify-center mt-10">
-                <button className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-2 px-10">
+                <button
+                  onClick={handleOnboard}
+                  className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-2 px-10"
+                >
                   Continue
                 </button>
               </div>

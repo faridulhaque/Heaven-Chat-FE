@@ -3,14 +3,18 @@ import Navbar from "./Navbar";
 import Header from "./Header";
 import Banner from "./Banner";
 
-function Hero() {
-  return (
-  <div className="relative min-h-0 pb-6 sm:pb-0 sm:min-h-screen">
-  <Navbar />
-  <Header />
+type HeroComponent = {
+  handleGoogleSignIn: () => any;
+};
 
-  <div
-    className="
+function Hero({ handleGoogleSignIn }: HeroComponent) {
+  return (
+    <div className="relative min-h-0 pb-6 sm:pb-0 sm:min-h-screen">
+      <Navbar handleGoogleSignIn={handleGoogleSignIn} />
+      <Header handleGoogleSignIn={handleGoogleSignIn} />
+
+      <div
+        className="
       absolute
       top-60 sm:bottom-0 sm:top-auto
       left-0
@@ -21,11 +25,10 @@ function Hero() {
       blur-2xl opacity-50
       rounded-2xl
     "
-  ></div>
+      ></div>
 
-  <Banner />
-</div>
-
+      <Banner />
+    </div>
   );
 }
 
