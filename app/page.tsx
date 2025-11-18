@@ -5,6 +5,7 @@ import Feature from "@/components/home/Feature";
 import Footer from "@/components/home/Footer";
 import Hero from "@/components/home/Hero";
 import OnboardingModal from "@/components/home/OnboardingModal";
+import Loading from "@/components/others/Loading";
 import { signInWithGoogle } from "@/services/firebase.config";
 import { useLoginMutation } from "@/services/queries/authApi";
 import Image from "next/image";
@@ -30,9 +31,11 @@ export default function Home() {
     const res: any = await login({
       email,
     });
-    if (res?.data?.token) {
+    const token = res?.data?.data?.token;
+
+    if (token) {
       toast.success("You have successfully logged in");
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", token);
     } else {
       setNewUser({
         email,
@@ -40,6 +43,8 @@ export default function Home() {
       });
     }
   };
+
+  if (onboarding) return <Loading></Loading>;
   return (
     <div className="mx-auto" style={{ width: "95%" }}>
       <Hero handleGoogleSignIn={handleGoogleSignIn}></Hero>
@@ -47,7 +52,12 @@ export default function Home() {
       <ExtraFeatures></ExtraFeatures>
       <About></About>
       <Footer handleGoogleSignIn={handleGoogleSignIn}></Footer>
-      {newUser && <OnboardingModal newUser={newUser}></OnboardingModal>}
+      {newUser?.email && (
+        <OnboardingModal
+          newUser={newUser}
+          setNewUser={setNewUser}
+        ></OnboardingModal>
+      )}
     </div>
   );
 }
