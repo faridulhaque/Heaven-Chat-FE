@@ -9,3 +9,10 @@ export type loginPayload = {
   name: string;
   avatar: string;
 };
+
+export type UserPayload = {
+  email: string;
+  name: string;
+  userId: string;
+  avatar: string;
+};

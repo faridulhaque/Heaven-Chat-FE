@@ -2,8 +2,14 @@
 import React, { useState } from "react";
 import ChatListItem from "../chat-others/ChatListItem";
 import ChatBox from "../chat-lg/ChatBox";
+import { UserPayload } from "@/services/types";
+import Notification from "../chat-others/Notification";
 
-export default function ChatViewSm() {
+type ChatViewSmComponent = {
+  onboardedUser: UserPayload | null;
+};
+
+export default function ChatViewSm({ onboardedUser }: ChatViewSmComponent) {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
@@ -56,6 +62,9 @@ export default function ChatViewSm() {
             {[...Array(30)].map((_, i) => (
               <div key={i} onClick={() => setChatOpen(true)}>
                 <ChatListItem />
+                {onboardedUser && (
+                  <Notification onboardedUser={onboardedUser}></Notification>
+                )}
               </div>
             ))}
           </div>

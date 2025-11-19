@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ChatListItem from "../chat-others/ChatListItem";
 import ChatBox from "./ChatBox";
+import { UserPayload } from "@/services/types";
+import Notification from "../chat-others/Notification";
 
-export default function ChatViewLg() {
+type ChatViewLgComponent = {
+  onboardedUser: UserPayload | null;
+};
+
+export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -54,6 +60,9 @@ export default function ChatViewLg() {
             {[...Array(30)].map((_, i) => (
               <ChatListItem key={i} />
             ))}
+            {onboardedUser && (
+              <Notification onboardedUser={onboardedUser}></Notification>
+            )}
           </div>
         </div>
 
