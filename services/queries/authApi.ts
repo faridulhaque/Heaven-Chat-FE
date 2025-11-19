@@ -18,7 +18,15 @@ const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+
+    validate: builder.mutation({
+      query: () => ({
+        url: "/auth/validate",
+        method: "POST",
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useValidateMutation } =
+  authApi;

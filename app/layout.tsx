@@ -5,6 +5,14 @@ import "./globals.css";
 import { Provider } from "react-redux";
 import store from "@/services/store";
 import { Toaster } from "react-hot-toast";
+import { createContext, useContext, useState } from "react";
+import { UserPayload } from "@/services/types";
+export const Context = createContext(
+  {} as {
+    loggedInUser: UserPayload | null;
+    setLoggedInUser: (value: UserPayload) => void;
+  }
+);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,11 +29,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [loggedInUser, setLoggedInUser] = useState<UserPayload | null>(null);
+
+  const value = {
+    loggedInUser,
+    setLoggedInUser,
+  };
+
   return (
     <html lang="en">
       <body>
         <Toaster position="top-center" reverseOrder={false} />
-        <Provider store={store}>{children}</Provider>
+        <Context.Provider value={value}>
+          <Provider store={store}>{children}</Provider>
+        </Context.Provider>
       </body>
     </html>
   );

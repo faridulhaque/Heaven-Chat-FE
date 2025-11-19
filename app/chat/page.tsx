@@ -1,6 +1,7 @@
 "use client";
 import ChatViewLg from "@/components/chat-lg/ChatViewLg";
 import ChatViewSm from "@/components/chat-sm/ChatViewSm";
+import RequireUser from "@/components/others/RequireUser";
 import { UserPayload } from "@/services/types";
 import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
@@ -35,10 +36,12 @@ function Page() {
   }, []);
 
   return (
-    <div>
-      <ChatViewLg onboardedUser={onboardedUser} />
-      <ChatViewSm onboardedUser={onboardedUser} />
-    </div>
+    <RequireUser>
+      <div>
+        <ChatViewLg onboardedUser={onboardedUser} />
+        <ChatViewSm onboardedUser={onboardedUser} />
+      </div>
+    </RequireUser>
   );
 }
 

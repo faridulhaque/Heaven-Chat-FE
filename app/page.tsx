@@ -9,6 +9,7 @@ import Loading from "@/components/others/Loading";
 import { signInWithGoogle } from "@/services/firebase.config";
 import { useLoginMutation } from "@/services/queries/authApi";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -18,6 +19,7 @@ export default function Home() {
     name: string;
   } | null>(null);
   const [login, { isLoading: onboarding }] = useLoginMutation();
+  const router = useRouter();
 
   const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle();
@@ -36,6 +38,7 @@ export default function Home() {
     if (token) {
       toast.success("You have successfully logged in");
       localStorage.setItem("token", token);
+      router.push("/chat");
     } else {
       setNewUser({
         email,

@@ -11,6 +11,7 @@ export const apiSlice = createApi({
       const token = localStorage.getItem("token");
       if (token) {
         headers.set("Authorization", `${token}`);
+        headers.set("x-api-key", `${process.env.NEXT_PUBLIC_X_API_KEY}`);
       }
       return headers;
     },
