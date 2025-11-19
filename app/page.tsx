@@ -47,7 +47,7 @@ export default function Home() {
     if (token) {
       toast.success("You have successfully logged in");
       localStorage.setItem("token", token);
-      setToken(token)
+      setToken(token);
     } else {
       setNewUser({
         email,
@@ -57,6 +57,11 @@ export default function Home() {
   };
 
   const [validate, { isLoading: validating }] = useValidateMutation();
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) setToken(savedToken);
+  }, [token]);
 
   useEffect(() => {
     const check = async () => {

@@ -27,6 +27,9 @@ function Page() {
 
     socketRef.current.on("new-user", (data: any) => {
       setOnboardedUser(data);
+      setTimeout(() => {
+        setOnboardedUser(null);
+      }, 10000);
     });
 
     return () => {
@@ -36,12 +39,12 @@ function Page() {
   }, []);
 
   return (
-    <RequireUser>
-      <div>
-        <ChatViewLg onboardedUser={onboardedUser} />
-        <ChatViewSm onboardedUser={onboardedUser} />
-      </div>
-    </RequireUser>
+    // <RequireUser>
+    <div>
+      <ChatViewLg onboardedUser={onboardedUser} />
+      <ChatViewSm onboardedUser={onboardedUser} />
+    </div>
+    // </RequireUser>
   );
 }
 

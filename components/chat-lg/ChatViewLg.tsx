@@ -1,14 +1,18 @@
-import React, { useEffect } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import ChatListItem from "../chat-others/ChatListItem";
 import ChatBox from "./ChatBox";
 import { UserPayload } from "@/services/types";
 import Notification from "../chat-others/Notification";
+import AIChatItem from "../chat-others/AIChatItem";
+import ChatBoxAi from "./ChatBoxAi";
 
 type ChatViewLgComponent = {
   onboardedUser: UserPayload | null;
 };
 
 export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
+  const [isAi, setAi] = useState(true);
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -57,6 +61,7 @@ export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
           </div>
 
           <div className="mt-2">
+            {isAi && <AIChatItem setAi={setAi}></AIChatItem>}
             {[...Array(30)].map((_, i) => (
               <ChatListItem key={i} />
             ))}
@@ -67,7 +72,7 @@ export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
         </div>
 
         <div className="flex-1 rounded-lg">
-          <ChatBox />
+          {isAi ? <ChatBoxAi></ChatBoxAi> : <ChatBox />}
         </div>
       </div>
     </div>
