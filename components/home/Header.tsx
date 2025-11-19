@@ -1,10 +1,17 @@
+"use client";
+import { Context } from "@/app/layout";
 import Image from "next/image";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useContext } from "react";
 type HeaderComponent = {
   handleGoogleSignIn: () => any;
 };
 
 export default function Header({ handleGoogleSignIn }: HeaderComponent) {
+  const value = useContext(Context);
+
+  const { loggedInUser, setLoggedInUser } = value;
+  const router = useRouter();
   return (
     <div className="pt-5 relative z-5">
       <div className="w-11/12 mx-auto lg:w-3/4 relative z-5">
@@ -21,12 +28,21 @@ export default function Header({ handleGoogleSignIn }: HeaderComponent) {
           fresh, light, and full of life.
         </p>
         <div className=" w-full h-20 flex items-center justify-center">
-          <button
-            onClick={handleGoogleSignIn}
-            className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-3 px-6 flex  text-sm"
-          >
-            Sign In
-          </button>
+          {loggedInUser ? (
+            <button
+              onClick={() => router.push("/chat")}
+              className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-3 px-6 flex  text-sm"
+            >
+              Continue
+            </button>
+          ) : (
+            <button
+              onClick={handleGoogleSignIn}
+              className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-3 px-6 flex  text-sm"
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </div>
     </div>

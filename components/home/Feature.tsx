@@ -3,7 +3,7 @@ import React from "react";
 
 function Feature() {
   return (
-    <div className="py-14 mx-auto w-11/12">
+    <div id="features" className="py-14 mx-auto w-11/12">
       <h2 className="text-center text-3xl md:text-4xl text-white py-3">
         Features for you
       </h2>
@@ -15,7 +15,6 @@ function Feature() {
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
         {/* Feature Card */}
         <div className="w-full h-64 rounded-md relative">
-          
           <div className="absolute h-1/4 w-full border border-[#FF4F4F]/50 border-b-0 rounded-t-md"></div>
 
           <div className="absolute inset-0 z-10 flex flex-col px-6 py-6">

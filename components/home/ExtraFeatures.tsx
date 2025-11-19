@@ -3,7 +3,7 @@ import React from "react";
 
 export default function ExtraFeatures() {
   return (
-    <div className="mx-auto w-11/12  h-auto">
+    <div id="resources" className="mx-auto w-11/12  h-auto">
       <div className="w-full mx-auto py-1">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 ">
           <div className="md:w-1/2 w-full flex">

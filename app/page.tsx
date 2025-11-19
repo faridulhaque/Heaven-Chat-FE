@@ -7,19 +7,28 @@ import Hero from "@/components/home/Hero";
 import OnboardingModal from "@/components/home/OnboardingModal";
 import Loading from "@/components/others/Loading";
 import { signInWithGoogle } from "@/services/firebase.config";
-import { useLoginMutation } from "@/services/queries/authApi";
-import Image from "next/image";
+import {
+  useLoginMutation,
+  useValidateMutation,
+} from "@/services/queries/authApi";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Context } from "./layout";
 
 export default function Home() {
   const [newUser, setNewUser] = useState<{
     email: string;
     name: string;
   } | null>(null);
+
   const [login, { isLoading: onboarding }] = useLoginMutation();
   const router = useRouter();
+  const value = useContext(Context);
+
+  const { setLoggedInUser, loggedInUser } = value;
+
+  const [token, setToken] = useState("");
 
   const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle();
@@ -38,7 +47,7 @@ export default function Home() {
     if (token) {
       toast.success("You have successfully logged in");
       localStorage.setItem("token", token);
-      router.push("/chat");
+      setToken(token)
     } else {
       setNewUser({
         email,
@@ -47,7 +56,24 @@ export default function Home() {
     }
   };
 
-  if (onboarding) return <Loading></Loading>;
+  const [validate, { isLoading: validating }] = useValidateMutation();
+
+  useEffect(() => {
+    const check = async () => {
+      const res: any = await validate("");
+      const user = res?.data?.data;
+
+      if (user) setLoggedInUser(user);
+    };
+    if (token) {
+      check();
+    }
+  }, [token]);
+
+  if (validating) return <Loading></Loading>;
+
+  console.log("loggedInUser", loggedInUser);
+
   return (
     <div className="mx-auto" style={{ width: "95%" }}>
       <Hero handleGoogleSignIn={handleGoogleSignIn}></Hero>

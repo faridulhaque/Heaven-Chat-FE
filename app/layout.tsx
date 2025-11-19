@@ -10,7 +10,7 @@ import { UserPayload } from "@/services/types";
 export const Context = createContext(
   {} as {
     loggedInUser: UserPayload | null;
-    setLoggedInUser: (value: UserPayload) => void;
+    setLoggedInUser: (value: UserPayload | null) => void;
   }
 );
 
