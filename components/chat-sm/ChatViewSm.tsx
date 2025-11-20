@@ -61,10 +61,10 @@ export default function ChatViewSm({ onboardedUser }: ChatViewSmComponent) {
           <div className="mt-2">
             {[...Array(30)].map((_, i) => (
               <div key={i} onClick={() => setChatOpen(true)}>
-                <ChatListItem />
+                {/* <ChatListItem />
                 {onboardedUser && (
                   <Notification onboardedUser={onboardedUser}></Notification>
-                )}
+                )} */}
               </div>
             ))}
           </div>
@@ -87,9 +87,7 @@ export default function ChatViewSm({ onboardedUser }: ChatViewSmComponent) {
             </div>
           </div>
 
-          <div className="h-11/12">
-            <ChatBox />
-          </div>
+          <div className="h-11/12">{/* <ChatBox /> */}</div>
         </div>
       )}
     </div>

@@ -2,22 +2,92 @@
 import Image from "next/image";
 import SentMessage from "../chat-others/SentMessage";
 import ReceivedMessage from "../chat-others/ReceivedMessage";
-import { Chat, UserPayload } from "@/services/types";
-import { useContext } from "react";
+import { Chat, TMessageDataFE, UserPayload } from "@/services/types";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "@/app/layout";
 import { useGetOneChatQuery } from "@/services/queries/othersApi";
 import Loading from "../others/Loading";
+import { Socket } from "socket.io-client";
 
 type ChatBoxComponent = {
   conversationId: string;
+  socketRef: React.RefObject<Socket | null>;
 };
 
-export default function ({ conversationId }: ChatBoxComponent) {
+export default function ChatBox({
+  conversationId,
+  socketRef,
+}: ChatBoxComponent) {
   const value = useContext(Context);
   const { loggedInUser } = value;
+  const [messageBody, setMessageBody] = useState<TMessageDataFE>({
+    to: "",
+    from: "",
+    type: "",
+    message: "",
+    conversationId: "",
+  });
+  const [messages, setMessages] = useState<TMessageDataFE[]>([]);
+
   const { data, isLoading: conversationLoading } =
     useGetOneChatQuery<any>(conversationId);
+
   const loadedConversation: Chat = data?.data;
+
+  useEffect(() => {
+    const s = socketRef.current;
+    if (!s) return;
+
+    const onPrivateMessage = (data: any) =>
+      setMessages((prev) => [
+        ...prev,
+        {
+          message: data.message,
+          from: data.from,
+          to: loggedInUser?.userId || "",
+          type: "text",
+          conversationId,
+        },
+      ]);
+
+    s.on("private-message", onPrivateMessage);
+
+    return () => {
+      s.off("private-message", onPrivateMessage);
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (!loadedConversation || !loadedConversation.counterParty) return;
+
+    if (messageBody.message.trim()) {
+      socketRef.current?.emit("private-message", {
+        to: loadedConversation.counterParty.userId,
+        message: messageBody,
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          message: messageBody.message,
+          from: messageBody.from,
+          to: messageBody.to,
+          type: messageBody.type,
+          conversationId: messageBody.conversationId,
+        },
+      ]);
+
+      setMessageBody({
+        to: "",
+        from: "",
+        type: "",
+        message: "",
+        conversationId: "",
+      });
+    }
+  };
+
+
 
   if (conversationLoading) return <Loading></Loading>;
 
@@ -39,7 +109,8 @@ export default function ({ conversationId }: ChatBoxComponent) {
             height={36}
           />
           <h2 className="text-sm font-medium truncate ml-4">
-            {loadedConversation.counterParty.name}
+            {loadedConversation.counterParty.userId}
+            {/* {conversationId} */}
           </h2>
 
           <div className="absolute top-1 bottom-0 right-0 h-full w-2/12 flex justify-around items-center">
@@ -75,16 +146,30 @@ export default function ({ conversationId }: ChatBoxComponent) {
         </div>
       </div>
       <div className="w-full h-10/12 border border-[#EBF0F4]/30 rounded-lg -mt-10 relative overflow-y-scroll">
-        {[...Array(20)].map((_, i) =>
-          i % 2 === 0 ? <SentMessage key={i} /> : <ReceivedMessage key={i} />
+        {messages?.map((m: TMessageDataFE, i: number) =>
+          m.from === loggedInUser?.userId ? (
+            <SentMessage key={i} message={m} />
+          ) : (
+            <ReceivedMessage key={i} message={m} />
+          )
         )}
 
         <div className=" sticky w-full left-0 right-0 bg-black h-16 rounded-b-lg -bottom-1 flex items-center justify-center">
           <input
+            onChange={(e) =>
+              setMessageBody({
+                message: e.target.value,
+                from: loggedInUser?.userId as string,
+                to: loadedConversation.counterParty.userId,
+                type: "text",
+                conversationId,
+              })
+            }
             type="text"
             className="h-11/12 px-3 py-3 outline-0 border-0 text-white text-sm w-full bg-[#1E1F24] rounded-b-lg"
           />
           <svg
+            onClick={() => sendMessage()}
             xmlns="http://www.w3.org/2000/svg"
             fill="white"
             viewBox="0 0 24 24"

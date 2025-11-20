@@ -25,5 +25,13 @@ export type Chat = {
   conversationId: string;
   members: string[];
   createdAt: string;
-  counterParty: UserPayload
+  counterParty: UserPayload;
+};
+
+export type TMessageDataFE = {
+  message: string;
+  type: string;
+  to: string;
+  from: string;
+  conversationId: string;
 };

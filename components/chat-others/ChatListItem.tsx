@@ -6,12 +6,14 @@ type ChatListItemComponent = {
   conversation: Chat;
   setConversationId: (cId: string) => void;
   setAi: (b: boolean) => void;
+  selected: boolean;
 };
 
 export default function ChatListItem({
   conversation,
   setConversationId,
   setAi,
+  selected,
 }: ChatListItemComponent) {
   return (
     <>
@@ -20,7 +22,9 @@ export default function ChatListItem({
           setConversationId(conversation.conversationId);
           setAi(false);
         }}
-        className="w-full h-16 flex items-center px-3 relative cursor-pointer hover:bg-[#2A2B32]"
+        className={`w-full h-16 flex items-center px-3 relative cursor-pointer hover:bg-[#2A2B32] ${
+          selected ? "bg-[#2A2B32]" : ""
+        }`}
       >
         <Image
           className="rounded-full"

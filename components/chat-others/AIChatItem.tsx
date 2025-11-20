@@ -3,12 +3,19 @@ import Image from "next/image";
 import React from "react";
 type AIChatItemComponent = {
   setAi: (value: boolean) => void;
+  setConversationId: (value: string) => void;
 };
 
-export default function AIChatItem({ setAi }: AIChatItemComponent) {
+export default function AIChatItem({
+  setAi,
+  setConversationId,
+}: AIChatItemComponent) {
   return (
     <div
-      onClick={() => setAi(true)}
+      onClick={() => {
+        setAi(true);
+        setConversationId("");
+      }}
       className="w-full h-16 flex items-center px-3 relative cursor-pointer hover:bg-[#2A2B32]"
     >
       <Image

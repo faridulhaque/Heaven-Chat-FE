@@ -1,7 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import { TMessageDataFE } from "@/services/types";
 
-export default function ReceivedMessage() {
+type ReceivedMessageComponent = {
+  message: TMessageDataFE;
+};
+
+export default function ReceivedMessage({ message }: ReceivedMessageComponent) {
   return (
     <div className="w-full flex justify-start my-2 px-4">
       <Image
@@ -13,7 +18,7 @@ export default function ReceivedMessage() {
       />
 
       <div className="bg-[#2b2b2f] max-w-[75%] px-3 py-2 text-white rounded-r-lg">
-        Lorem ipsum dolor sit amet...
+        {message.message}
       </div>
     </div>
   );

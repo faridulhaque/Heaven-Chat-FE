@@ -14,6 +14,7 @@ import {
 import Loading from "../others/Loading";
 import { handleSignOut } from "@/services/firebase.config";
 import { useRouter } from "next/navigation";
+import { Socket } from "socket.io-client";
 
 type ChatViewLgComponent = {
   onboardedUser: UserPayload | null;
@@ -22,6 +23,7 @@ type ChatViewLgComponent = {
   setRecipientId: (v: string) => void;
   conversationId: string;
   setConversationId: (c: string) => void;
+  socketRef: React.RefObject<Socket | null>;
 };
 
 export default function ChatViewLg({
@@ -31,6 +33,7 @@ export default function ChatViewLg({
   conversationId,
   setConversationId,
   setOnboardedUser,
+  socketRef,
 }: ChatViewLgComponent) {
   const router = useRouter();
   const [isAi, setAi] = useState(true);
@@ -107,10 +110,14 @@ export default function ChatViewLg({
           </div>
 
           <div className="mt-2">
-            <AIChatItem setAi={setAi}></AIChatItem>
+            <AIChatItem
+              setAi={setAi}
+              setConversationId={setConversationId}
+            ></AIChatItem>
             {chatList?.length &&
               chatList?.map((c: Chat) => (
                 <ChatListItem
+                  selected={c.conversationId === conversationId}
                   setConversationId={setConversationId}
                   setAi={setAi}
                   conversation={c}
@@ -131,7 +138,7 @@ export default function ChatViewLg({
           {isAi ? (
             <ChatBoxAi></ChatBoxAi>
           ) : (
-            <ChatBox conversationId={conversationId} />
+            <ChatBox socketRef={socketRef} conversationId={conversationId} />
           )}
         </div>
       </div>

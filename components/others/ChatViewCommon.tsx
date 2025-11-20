@@ -14,6 +14,7 @@ export default function ChatViewCommon() {
   const [recipientId, setRecipientId] = useState("");
 
   useEffect(() => {
+    console.log("SOCKET INIT");
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -21,7 +22,13 @@ export default function ChatViewCommon() {
       return;
     }
 
+    if (socketRef.current && socketRef.current.connected) {
+      console.log("Socket already connected:", socketRef.current.id);
+      return;
+    }
+
     socketRef.current = io(`${process.env.NEXT_PUBLIC_BASE_URL}/chat`, {
+      path: "/socket.io",
       transports: ["websocket"],
       auth: {
         token: token,
@@ -40,6 +47,7 @@ export default function ChatViewCommon() {
       socketRef.current?.disconnect();
     };
   }, []);
+
   return (
     <div>
       <ChatViewLg
@@ -49,6 +57,7 @@ export default function ChatViewCommon() {
         conversationId={conversationId}
         setConversationId={setConversationId}
         setOnboardedUser={setOnboardedUser}
+        socketRef={socketRef}
       />
       <ChatViewSm onboardedUser={onboardedUser} />
     </div>
