@@ -1,6 +1,6 @@
 "use client";
 import { Context } from "@/app/layout";
-import { HandleSignOut, signInWithGoogle } from "@/services/firebase.config";
+import { handleSignOut, signInWithGoogle } from "@/services/firebase.config";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,7 +65,7 @@ export default function Navbar({ handleGoogleSignIn }: NavbarComponent) {
         ) : (
           <button
             onClick={() => {
-              HandleSignOut();
+              handleSignOut();
               setLoggedInUser(null);
             }}
             className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"

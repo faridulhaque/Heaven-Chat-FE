@@ -77,7 +77,6 @@ export default function Home() {
 
   if (validating) return <Loading></Loading>;
 
-  console.log("loggedInUser", loggedInUser);
 
   return (
     <div className="mx-auto" style={{ width: "95%" }}>

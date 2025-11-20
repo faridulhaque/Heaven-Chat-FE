@@ -4,14 +4,36 @@ import React, { useContext, useEffect, useState } from "react";
 import Loading from "./Loading";
 import { Context } from "@/app/layout";
 import { useValidateMutation } from "@/services/queries/authApi";
-import { UserPayload } from "@/services/types";
 
 const RequireUser = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const value = useContext(Context);
-  const { loggedInUser } = value;
+  const { setLoggedInUser, loggedInUser } = useContext(Context);
 
-  if (!loggedInUser) return router.push("/");
+  const [validate, { isLoading: validating }] = useValidateMutation();
+  const [tokenChecked, setTokenChecked] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/");
+      return;
+    }
+
+    const run = async () => {
+      const res: any = await validate("");
+      const user = res?.data?.data;
+
+      if (user) setLoggedInUser(user);
+      else router.push("/");
+
+      setTokenChecked(true);
+    };
+
+    run();
+  }, []);
+
+  if (!tokenChecked || validating) return <Loading />;
 
   return <>{children}</>;
 };

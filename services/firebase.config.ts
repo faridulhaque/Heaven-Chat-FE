@@ -23,7 +23,7 @@ export const signInWithGoogle = async () => {
   return result;
 };
 
-export const HandleSignOut = async () => {
+export const handleSignOut = async () => {
   await signOut(auth);
   localStorage.removeItem("token");
 };

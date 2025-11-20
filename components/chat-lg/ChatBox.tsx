@@ -1,8 +1,26 @@
+"use client";
 import Image from "next/image";
 import SentMessage from "../chat-others/SentMessage";
 import ReceivedMessage from "../chat-others/ReceivedMessage";
+import { Chat, UserPayload } from "@/services/types";
+import { useContext } from "react";
+import { Context } from "@/app/layout";
+import { useGetOneChatQuery } from "@/services/queries/othersApi";
+import Loading from "../others/Loading";
 
-export default function () {
+type ChatBoxComponent = {
+  conversationId: string;
+};
+
+export default function ({ conversationId }: ChatBoxComponent) {
+  const value = useContext(Context);
+  const { loggedInUser } = value;
+  const { data, isLoading: conversationLoading } =
+    useGetOneChatQuery<any>(conversationId);
+  const loadedConversation: Chat = data?.data;
+
+  if (conversationLoading) return <Loading></Loading>;
+
   return (
     <div className="mx-auto w-full h-full flex flex-col gap-10 justify-around items-center">
       <div
@@ -13,12 +31,16 @@ export default function () {
         <div className="w-full h-16 flex items-center px-3 relative ">
           <Image
             className="rounded-full"
-            src="/assets/avatar-1.webp"
+            src={
+              loadedConversation.counterParty.avatar || "/assets/avatar-1.webp"
+            }
             alt="avatar"
             width={36}
             height={36}
           />
-          <h2 className="text-sm font-medium truncate ml-4">Matt White</h2>
+          <h2 className="text-sm font-medium truncate ml-4">
+            {loadedConversation.counterParty.name}
+          </h2>
 
           <div className="absolute top-1 bottom-0 right-0 h-full w-2/12 flex justify-around items-center">
             <svg

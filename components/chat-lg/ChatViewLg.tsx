@@ -1,18 +1,57 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ChatListItem from "../chat-others/ChatListItem";
 import ChatBox from "./ChatBox";
-import { UserPayload } from "@/services/types";
+import { Chat, UserPayload } from "@/services/types";
 import Notification from "../chat-others/Notification";
 import AIChatItem from "../chat-others/AIChatItem";
 import ChatBoxAi from "./ChatBoxAi";
+import { Context } from "@/app/layout";
+import {
+  useGetChatListQuery,
+  useStartChatMutation,
+} from "@/services/queries/othersApi";
+import Loading from "../others/Loading";
+import { handleSignOut } from "@/services/firebase.config";
+import { useRouter } from "next/navigation";
 
 type ChatViewLgComponent = {
   onboardedUser: UserPayload | null;
+  setOnboardedUser: (u: UserPayload | null) => void;
+  recipientId: string;
+  setRecipientId: (v: string) => void;
+  conversationId: string;
+  setConversationId: (c: string) => void;
 };
 
-export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
+export default function ChatViewLg({
+  onboardedUser,
+  setRecipientId,
+  recipientId,
+  conversationId,
+  setConversationId,
+  setOnboardedUser,
+}: ChatViewLgComponent) {
+  const router = useRouter();
   const [isAi, setAi] = useState(true);
+  const value = useContext(Context);
+  const { setLoggedInUser } = value;
+
+  const [startChat, { isLoading: starting }] = useStartChatMutation();
+  const { data: chatData, isLoading: chatLoading } =
+    useGetChatListQuery<any>("");
+  const chatList: any = chatData?.data;
+
+  const handleStartChat = async (recipientId: string) => {
+    const res: any = await startChat({
+      members: [recipientId, value.loggedInUser?.userId],
+    });
+    setRecipientId(recipientId);
+    setConversationId(res?.data?.data?.conversationId);
+    setOnboardedUser(null);
+  };
+
+  if (chatLoading) return <Loading></Loading>;
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -25,7 +64,7 @@ export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
             />
 
             <div className="flex items-center gap-3">
-              <button className="text-xl">
+              <button onClick={() => router.push("/")} className="text-xl">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -41,7 +80,14 @@ export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
                   />
                 </svg>
               </button>
-              <button className="text-xl">
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setLoggedInUser(null);
+                  router.push("/");
+                }}
+                className="text-xl"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -61,18 +107,32 @@ export default function ChatViewLg({ onboardedUser }: ChatViewLgComponent) {
           </div>
 
           <div className="mt-2">
-            {isAi && <AIChatItem setAi={setAi}></AIChatItem>}
-            {[...Array(30)].map((_, i) => (
-              <ChatListItem key={i} />
-            ))}
-            {onboardedUser && (
-              <Notification onboardedUser={onboardedUser}></Notification>
-            )}
+            <AIChatItem setAi={setAi}></AIChatItem>
+            {chatList?.length &&
+              chatList?.map((c: Chat) => (
+                <ChatListItem
+                  setConversationId={setConversationId}
+                  setAi={setAi}
+                  conversation={c}
+                  key={c?.conversationId}
+                ></ChatListItem>
+              ))}
           </div>
+
+          {onboardedUser && (
+            <Notification
+              onboardedUser={onboardedUser}
+              handleStartChat={handleStartChat}
+            ></Notification>
+          )}
         </div>
 
         <div className="flex-1 rounded-lg">
-          {isAi ? <ChatBoxAi></ChatBoxAi> : <ChatBox />}
+          {isAi ? (
+            <ChatBoxAi></ChatBoxAi>
+          ) : (
+            <ChatBox conversationId={conversationId} />
+          )}
         </div>
       </div>
     </div>
