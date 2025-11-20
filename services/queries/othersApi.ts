@@ -9,6 +9,7 @@ const othersApi = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["chat"],
     }),
 
     getChatList: builder.query({
@@ -16,6 +17,7 @@ const othersApi = apiSlice.injectEndpoints({
         url: "/chat/list",
         method: "GET",
       }),
+      providesTags: ["chat"],
     }),
 
     getOneChat: builder.query({
