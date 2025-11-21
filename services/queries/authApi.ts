@@ -24,6 +24,7 @@ const authApi = apiSlice.injectEndpoints({
         url: "/auth/validate",
         method: "POST",
       }),
+      invalidatesTags: ["blocking"],
     }),
   }),
 });

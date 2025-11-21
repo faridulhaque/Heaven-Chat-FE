@@ -20,14 +20,35 @@ const othersApi = apiSlice.injectEndpoints({
       providesTags: ["chat"],
     }),
 
+    getMessages: builder.query({
+      query: (conversationId: string) => ({
+        url: `/chat/${conversationId}/messages`,
+        method: "GET",
+      }),
+      providesTags: ["chat"],
+    }),
+
     getOneChat: builder.query({
       query: (id: string) => ({
         url: `/chat/conversation/${id}`,
         method: "GET",
       }),
     }),
+
+    blockUser: builder.mutation({
+      query: (id: string) => ({
+        url: `/chat/block/${id}`,
+        method: "PUT",
+      }),
+
+      invalidatesTags: ["blocking"],
+    }),
   }),
 });
 
-export const { useStartChatMutation, useGetChatListQuery, useGetOneChatQuery } =
-  othersApi;
+export const {
+  useStartChatMutation,
+  useGetChatListQuery,
+  useGetOneChatQuery,
+  useGetMessagesQuery,
+} = othersApi;
