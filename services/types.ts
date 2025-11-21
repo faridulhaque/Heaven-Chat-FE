@@ -15,6 +15,7 @@ export type UserPayload = {
   name: string;
   userId: string;
   avatar: string;
+  blocked: string[];
 };
 
 export type StartChatType = {

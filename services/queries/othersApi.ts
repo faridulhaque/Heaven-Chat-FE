@@ -51,4 +51,5 @@ export const {
   useGetChatListQuery,
   useGetOneChatQuery,
   useGetMessagesQuery,
+  useBlockUserMutation,
 } = othersApi;

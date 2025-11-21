@@ -39,6 +39,10 @@ export default function ChatBox({
     useGetOneChatQuery<any>(conversationId);
   const loadedConversation: Chat = data?.data;
 
+  const isBlocked = loggedInUser?.blocked?.includes(
+    loadedConversation.counterParty.userId
+  );
+
   useEffect(() => {
     const s = socketRef.current;
     if (!s) return;
@@ -163,45 +167,51 @@ export default function ChatBox({
         <div ref={bottomRef} />
       </div>
 
-      <div className="h-16 flex items-center px-3 bg-[#1E1F24] border-t border-[#2A2B31]">
-        <input
-          onChange={(e) =>
-            setMessageBody({
-              message: e.target.value,
-              from: loggedInUser?.userId as string,
-              to: loadedConversation.counterParty.userId,
-              type: "text",
-              conversationId,
-            })
-          }
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
+      {isBlocked ? (
+        <div className="h-12">
+          <h3 className="text-center text-md text-white/80">You can't send message to this conversation</h3>
+        </div>
+      ) : (
+        <div className="h-16 flex items-center px-3 bg-[#1E1F24] border-t border-[#2A2B31]">
+          <input
+            onChange={(e) =>
+              setMessageBody({
+                message: e.target.value,
+                from: loggedInUser?.userId as string,
+                to: loadedConversation.counterParty.userId,
+                type: "text",
+                conversationId,
+              })
             }
-          }}
-          value={messageBody.message}
-          type="text"
-          placeholder="Type a message..."
-          className="flex-1 h-11 px-3 text-sm text-white bg-[#2A2B31] rounded-lg outline-none"
-        />
-
-        <svg
-          onClick={sendMessage}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="white"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="black"
-          className="w-8 h-8 ml-3 cursor-pointer"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+            value={messageBody.message}
+            type="text"
+            placeholder="Type a message..."
+            className="flex-1 h-11 px-3 text-sm text-white bg-[#2A2B31] rounded-lg outline-none"
           />
-        </svg>
-      </div>
+
+          <svg
+            onClick={sendMessage}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="white"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="black"
+            className="w-8 h-8 ml-3 cursor-pointer"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+            />
+          </svg>
+        </div>
+      )}
     </div>
   );
 }
