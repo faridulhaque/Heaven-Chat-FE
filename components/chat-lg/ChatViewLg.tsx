@@ -8,6 +8,7 @@ import AIChatItem from "../chat-others/AIChatItem";
 import ChatBoxAi from "./ChatBoxAi";
 import { Context } from "@/app/layout";
 import {
+  useCheckIfBlockedQuery,
   useGetChatListQuery,
   useStartChatMutation,
 } from "@/services/queries/othersApi";
@@ -41,6 +42,13 @@ export default function ChatViewLg({
   const { setLoggedInUser } = value;
 
   const [startChat, { isLoading: starting }] = useStartChatMutation();
+  const { data: blockCheck, isLoading: checkingBlock } =
+    useCheckIfBlockedQuery<any>(
+      [onboardedUser?.userId, value?.loggedInUser?.userId],
+      { skip: !onboardedUser?.userId || !value?.loggedInUser?.userId }
+    );
+
+  console.log("block checking in chatview lg", blockCheck);
   const { data: chatData, isLoading: chatLoading } =
     useGetChatListQuery<any>("");
   const chatList: any = chatData?.data;
@@ -54,7 +62,7 @@ export default function ChatViewLg({
     setOnboardedUser(null);
   };
 
-  if (chatLoading) return <Loading></Loading>;
+  if (chatLoading | checkingBlock) return <Loading></Loading>;
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">

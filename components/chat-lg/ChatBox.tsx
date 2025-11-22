@@ -6,6 +6,9 @@ import { Chat, TMessageDataFE } from "@/services/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "@/app/layout";
 import {
+  useBlockUserMutation,
+  useCheckIfBlockedQuery,
+  useDeleteChatMutation,
   useGetMessagesQuery,
   useGetOneChatQuery,
 } from "@/services/queries/othersApi";
@@ -35,13 +38,24 @@ export default function ChatBox({
 
   const [messages, setMessages] = useState<TMessageDataFE[]>([]);
 
+  const [block, { isLoading: blocking }] = useBlockUserMutation();
+  const [deleteChat, { isLoading: deleting }] = useDeleteChatMutation();
+
   const { data, isLoading: conversationLoading } =
     useGetOneChatQuery<any>(conversationId);
   const loadedConversation: Chat = data?.data;
 
-  const isBlocked = loggedInUser?.blocked?.includes(
-    loadedConversation.counterParty.userId
-  );
+  const { data: blockCheck, isLoading: checkingBlock } =
+    useCheckIfBlockedQuery<any>(loadedConversation?.members, {
+      skip:
+        !loadedConversation?.members || loadedConversation?.members?.length < 2,
+    });
+
+  console.log("loaded conversatin members", loadedConversation?.members);
+
+  console.log("block check", blockCheck);
+
+  const isBlocked: boolean = blockCheck?.data as boolean;
 
   useEffect(() => {
     const s = socketRef.current;
@@ -104,7 +118,8 @@ export default function ChatBox({
     });
   }, [conversationId, messagesData]);
 
-  if (conversationLoading || messagesLoading) return <Loading />;
+  if (conversationLoading || messagesLoading || checkingBlock)
+    return <Loading />;
 
   return (
     <div className="flex flex-col w-full h-full bg-[#1E1F24]">
@@ -124,35 +139,50 @@ export default function ChatBox({
         </h2>
 
         <div className="flex gap-4 text-white">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6 cursor-pointer"
+          <button
+            disabled={blocking}
+            onClick={async () => {
+              const res = await block(loadedConversation.counterParty.userId);
+              console.log("res blocked", res);
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 cursor-pointer"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+              />
+            </svg>
+          </button>
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6 cursor-pointer"
+          <button
+            onClick={async () => {
+              const res = await deleteChat(conversationId);
+              console.log("delete res", res);
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 cursor-pointer"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -169,7 +199,9 @@ export default function ChatBox({
 
       {isBlocked ? (
         <div className="h-12">
-          <h3 className="text-center text-md text-white/80">You can't send message to this conversation</h3>
+          <h3 className="text-center text-md text-white/80">
+            You can't send message to this conversation
+          </h3>
         </div>
       ) : (
         <div className="h-16 flex items-center px-3 bg-[#1E1F24] border-t border-[#2A2B31]">

@@ -35,10 +35,27 @@ const othersApi = apiSlice.injectEndpoints({
       }),
     }),
 
+    checkIfBlocked: builder.query({
+      query: (members: string[]) => ({
+        url: `/chat/blocked?members=${members[0]}&members=${members[1]}`,
+        method: "GET",
+      }),
+      providesTags: ["blocking"],
+    }),
+
     blockUser: builder.mutation({
       query: (id: string) => ({
         url: `/chat/block/${id}`,
         method: "PUT",
+      }),
+
+      invalidatesTags: ["blocking"],
+    }),
+
+    deleteChat: builder.mutation({
+      query: (id: string) => ({
+        url: `/chat/${id}`,
+        method: "DELETE",
       }),
 
       invalidatesTags: ["blocking"],
@@ -52,4 +69,6 @@ export const {
   useGetOneChatQuery,
   useGetMessagesQuery,
   useBlockUserMutation,
+  useCheckIfBlockedQuery,
+  useDeleteChatMutation,
 } = othersApi;
