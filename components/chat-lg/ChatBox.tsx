@@ -18,11 +18,13 @@ import { Socket } from "socket.io-client";
 type ChatBoxComponent = {
   conversationId: string;
   socketRef: React.RefObject<Socket | null>;
+  setAi: (v: boolean) => void;
 };
 
 export default function ChatBox({
   conversationId,
   socketRef,
+  setAi,
 }: ChatBoxComponent) {
   const value = useContext(Context);
   const { loggedInUser } = value;
@@ -139,33 +141,38 @@ export default function ChatBox({
         </h2>
 
         <div className="flex gap-4 text-white">
-          <button
-            disabled={blocking}
-            onClick={async () => {
-              const res = await block(loadedConversation.counterParty.userId);
-              console.log("res blocked", res);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 cursor-pointer"
+          {!isBlocked ? (
+            <button
+              disabled={blocking}
+              onClick={async () => {
+                const res = await block(loadedConversation.counterParty.userId);
+                console.log("res blocked", res);
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 cursor-pointer"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+                />
+              </svg>
+            </button>
+          ) : (
+            <></>
+          )}
 
           <button
             onClick={async () => {
               const res = await deleteChat(conversationId);
-              console.log("delete res", res);
+              console.log('delete res', res)
+              setAi(true);
             }}
           >
             <svg
@@ -199,8 +206,18 @@ export default function ChatBox({
 
       {isBlocked ? (
         <div className="h-12">
-          <h3 className="text-center text-md text-white/80">
-            You can't send message to this conversation
+          <h3 className="text-sm text-center text-md text-white/80">
+            You can't send message to this conversation{" "}
+            <button
+              className="text-white/70 text-xs underline cursor-pointer"
+              disabled={blocking}
+              onClick={async () => {
+                const res = await block(loadedConversation.counterParty.userId);
+                console.log("res blocked", res);
+              }}
+            >
+              Unblock Now
+            </button>
           </h3>
         </div>
       ) : (

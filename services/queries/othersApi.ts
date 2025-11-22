@@ -54,11 +54,11 @@ const othersApi = apiSlice.injectEndpoints({
 
     deleteChat: builder.mutation({
       query: (id: string) => ({
-        url: `/chat/${id}`,
+        url: `/chat/conversation/${id}`,
         method: "DELETE",
       }),
 
-      invalidatesTags: ["blocking"],
+      invalidatesTags: ["chat"],
     }),
   }),
 });

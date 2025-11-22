@@ -146,7 +146,11 @@ export default function ChatViewLg({
           {isAi ? (
             <ChatBoxAi></ChatBoxAi>
           ) : (
-            <ChatBox socketRef={socketRef} conversationId={conversationId} />
+            <ChatBox
+              socketRef={socketRef}
+              conversationId={conversationId}
+              setAi={setAi}
+            />
           )}
         </div>
       </div>
