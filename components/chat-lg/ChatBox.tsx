@@ -29,6 +29,7 @@ export default function ChatBox({
   const value = useContext(Context);
   const { loggedInUser } = value;
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [isBlocker, setIsBlocker] = useState(false);
 
   const [messageBody, setMessageBody] = useState<TMessageDataFE>({
     to: "",
@@ -84,6 +85,15 @@ export default function ChatBox({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, conversationId]);
+
+  useEffect(() => {
+    const found = loggedInUser?.blocked?.find(
+      (b: string) => b === loadedConversation?.counterParty?.userId
+    );
+    if (found) setIsBlocker(true);
+  }, [loggedInUser?.blocked, loadedConversation?.counterParty?.userId]);
+
+  console.log("isblockedby me", isBlocker);
 
   const sendMessage = () => {
     if (!loadedConversation?.counterParty) return;
@@ -171,7 +181,7 @@ export default function ChatBox({
           <button
             onClick={async () => {
               const res = await deleteChat(conversationId);
-              console.log('delete res', res)
+              console.log("delete res", res);
               setAi(true);
             }}
           >
@@ -208,16 +218,22 @@ export default function ChatBox({
         <div className="h-12">
           <h3 className="text-sm text-center text-md text-white/80">
             You can't send message to this conversation{" "}
-            <button
-              className="text-white/70 text-xs underline cursor-pointer"
-              disabled={blocking}
-              onClick={async () => {
-                const res = await block(loadedConversation.counterParty.userId);
-                console.log("res blocked", res);
-              }}
-            >
-              Unblock Now
-            </button>
+            {isBlocker ? (
+              <button
+                className="text-white/70 text-xs underline cursor-pointer"
+                disabled={blocking}
+                onClick={async () => {
+                  const res = await block(
+                    loadedConversation.counterParty.userId
+                  );
+                  console.log("res blocked", res);
+                }}
+              >
+                Unblock Now
+              </button>
+            ) : (
+              <></>
+            )}
           </h3>
         </div>
       ) : (

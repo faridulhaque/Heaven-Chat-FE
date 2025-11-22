@@ -1,17 +1,26 @@
 "use client";
 
+import { Context } from "@/app/layout";
 import ChatViewLg from "@/components/chat-lg/ChatViewLg";
 import ChatViewSm from "@/components/chat-sm/ChatViewSm";
+import { useCheckIfBlockedQuery } from "@/services/queries/othersApi";
 import { UserPayload } from "@/services/types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import Loading from "./Loading";
 
 export default function ChatViewCommon() {
   const socketRef = useRef<Socket | null>(null);
   const [onboardedUser, setOnboardedUser] = useState<UserPayload | null>(null);
+  const value = useContext(Context);
 
   const [conversationId, setConversationId] = useState("");
   const [recipientId, setRecipientId] = useState("");
+  const { data: blockCheck, isLoading: checkingBlock } =
+    useCheckIfBlockedQuery<any>(
+      [onboardedUser?.userId, value?.loggedInUser?.userId],
+      { skip: !onboardedUser?.userId || !value?.loggedInUser?.userId }
+    );
 
   useEffect(() => {
     console.log("SOCKET INIT");
@@ -36,10 +45,12 @@ export default function ChatViewCommon() {
     });
 
     socketRef.current.on("new-user", (data: any) => {
-      setOnboardedUser(data?.user);
-      setTimeout(() => {
-        setOnboardedUser(null);
-      }, 60000);
+      if (blockCheck?.data === false) {
+        setOnboardedUser(data?.user);
+        setTimeout(() => {
+          setOnboardedUser(null);
+        }, 60000);
+      }
     });
 
     return () => {
@@ -47,6 +58,8 @@ export default function ChatViewCommon() {
       socketRef.current?.disconnect();
     };
   }, []);
+
+  if (blockCheck) return <Loading></Loading>;
 
   return (
     <div>
