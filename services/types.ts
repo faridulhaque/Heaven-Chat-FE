@@ -36,3 +36,4 @@ export type TMessageDataFE = {
   from: string;
   conversationId: string;
 };
+export type CallState = "idle" | "calling" | "receiving" | "inCall" | "ended";
