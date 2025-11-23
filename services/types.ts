@@ -27,6 +27,8 @@ export type Chat = {
   members: string[];
   createdAt: string;
   counterParty: UserPayload;
+  lastMessage: string;
+  updatedAt: string;
 };
 
 export type TMessageDataFE = {
@@ -35,5 +37,13 @@ export type TMessageDataFE = {
   to: string;
   from: string;
   conversationId: string;
+  time: string;
 };
 export type CallState = "idle" | "calling" | "receiving" | "inCall" | "ended";
+
+export type LastMessageValue = {
+  message: string;
+  time: string;
+};
+
+export type LastMessageMap = Map<string, LastMessageValue>;

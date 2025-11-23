@@ -2,7 +2,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import ChatListItem from "../chat-others/ChatListItem";
 import ChatBox from "./ChatBox";
-import { Chat, UserPayload } from "@/services/types";
+import {
+  Chat,
+  LastMessageMap,
+  LastMessageValue,
+  UserPayload,
+} from "@/services/types";
 import Notification from "../chat-others/Notification";
 import AIChatItem from "../chat-others/AIChatItem";
 import ChatBoxAi from "./ChatBoxAi";
@@ -38,6 +43,8 @@ export default function ChatViewLg({
 }: ChatViewLgComponent) {
   const router = useRouter();
   const [isAi, setAi] = useState(true);
+  const [lastMessages, setLastMessages] = useState<LastMessageMap>(new Map());
+
   const value = useContext(Context);
   const { setLoggedInUser } = value;
 
@@ -113,12 +120,17 @@ export default function ChatViewLg({
 
           <div className="mt-2">
             <AIChatItem
+              isAi={isAi}
               setAi={setAi}
               setConversationId={setConversationId}
             ></AIChatItem>
             {chatList?.length &&
               chatList?.map((c: Chat) => (
                 <ChatListItem
+                  lastMessageData={
+                    lastMessages.get(conversationId) as LastMessageValue
+                  }
+                  socketRef={socketRef}
                   selected={c.conversationId === conversationId}
                   setConversationId={setConversationId}
                   setAi={setAi}
@@ -144,6 +156,8 @@ export default function ChatViewLg({
               socketRef={socketRef}
               conversationId={conversationId}
               setAi={setAi}
+              setLastMessages={setLastMessages}
+              lastMessages={lastMessages}
             />
           )}
         </div>

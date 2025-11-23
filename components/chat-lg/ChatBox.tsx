@@ -2,7 +2,12 @@
 import Image from "next/image";
 import SentMessage from "../chat-others/SentMessage";
 import ReceivedMessage from "../chat-others/ReceivedMessage";
-import { Chat, TMessageDataFE } from "@/services/types";
+import {
+  Chat,
+  LastMessageMap,
+  LastMessageValue,
+  TMessageDataFE,
+} from "@/services/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "@/app/layout";
 import {
@@ -20,12 +25,16 @@ type ChatBoxComponent = {
   conversationId: string;
   socketRef: React.RefObject<Socket | null>;
   setAi: (v: boolean) => void;
+  setLastMessages: (value: LastMessageMap) => void;
+  lastMessages: LastMessageMap;
 };
 
 export default function ChatBox({
   conversationId,
   socketRef,
   setAi,
+  setLastMessages,
+  lastMessages,
 }: ChatBoxComponent) {
   const value = useContext(Context);
   const { loggedInUser } = value;
@@ -41,6 +50,7 @@ export default function ChatBox({
     type: "",
     message: "",
     conversationId: "",
+    time: "",
   });
 
   const [messages, setMessages] = useState<TMessageDataFE[]>([]);
@@ -68,9 +78,15 @@ export default function ChatBox({
     const s = socketRef.current;
     if (!s) return;
 
-    const onPrivateMessage = (data: any) =>
+    const onPrivateMessage = (data: TMessageDataFE) => {
       setMessages((prev) => [...prev, data]);
-
+      setLastMessages(
+        new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
+          message: data.message,
+          time: data.time,
+        })
+      );
+    };
     s.on("private-message", onPrivateMessage);
 
     return () => {
@@ -80,6 +96,23 @@ export default function ChatBox({
 
   const { data: messagesData, isLoading: messagesLoading } =
     useGetMessagesQuery<any>(conversationId);
+
+  const [isOnline, setIsOnline] = useState(false);
+
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    socket.emit("is_online", loadedConversation?.counterParty?.userId);
+
+    socket.on("is_online", (value) => {
+      setIsOnline(value);
+    });
+
+    return () => {
+      socket.off("is_online");
+    };
+  }, [socketRef.current, loadedConversation?.counterParty?.userId]);
 
   useEffect(() => {
     if (!messagesData || !messagesData.data) return;
@@ -109,7 +142,14 @@ export default function ChatBox({
       to: loadedConversation.counterParty.userId,
       type: "text",
       conversationId,
+      time: new Date().toISOString(),
     };
+    setLastMessages(
+      new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
+        message: msg.message,
+        time: new Date().toISOString(),
+      })
+    );
 
     socketRef.current?.emit("private-message", { to: msg.to, message: msg });
 
@@ -121,6 +161,7 @@ export default function ChatBox({
       type: "",
       message: "",
       conversationId: "",
+      time: "",
     });
   };
 
@@ -131,6 +172,7 @@ export default function ChatBox({
       to: "",
       type: "",
       conversationId: "",
+      time: "",
     });
   }, [conversationId, messagesData]);
 
@@ -153,6 +195,9 @@ export default function ChatBox({
 
           <h2 className="text-sm font-medium ml-3 text-white truncate flex-1">
             {loadedConversation.counterParty.name}
+            {isOnline && (
+              <span className="w-2 h-2 rounded-full bg-green-500 ml-3 inline-block" />
+            )}
           </h2>
 
           <div className="flex gap-4 text-white">
@@ -277,6 +322,7 @@ export default function ChatBox({
                   to: loadedConversation.counterParty.userId,
                   type: "text",
                   conversationId,
+                  time: "",
                 })
               }
               onKeyDown={(e) => {

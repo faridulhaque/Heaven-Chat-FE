@@ -91,6 +91,12 @@ function ChatBoxAi() {
 
         <div className="w-full bg-black h-12 rounded-b-lg flex items-center px-3 gap-3">
           <input
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             type="text"
