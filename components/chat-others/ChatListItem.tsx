@@ -21,7 +21,8 @@ export default function ChatListItem({
   selected,
 }: ChatListItemComponent) {
   const [isOnline, setIsOnline] = useState(false);
-
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log("timezone", timeZone);
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
