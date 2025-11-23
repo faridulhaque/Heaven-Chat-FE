@@ -21,11 +21,13 @@ import Loading from "../others/Loading";
 import { handleSignOut } from "@/services/firebase.config";
 import { useRouter } from "next/navigation";
 import { Socket } from "socket.io-client";
+import BottomBar from "../chat-others/BottomBar";
+import Image from "next/image";
 
 type ChatViewLgComponent = {
   onboardedUser: UserPayload | null;
-  setOnboardedUser: (u: UserPayload | null) => void;
   recipientId: string;
+  setOnboardedUser: (u: UserPayload | null) => void;
   setRecipientId: (v: string) => void;
   conversationId: string;
   setConversationId: (c: string) => void;
@@ -42,11 +44,12 @@ export default function ChatViewLg({
   socketRef,
 }: ChatViewLgComponent) {
   const router = useRouter();
+  const [isChatList, setChatList] = useState(true);
   const [isAi, setAi] = useState(true);
   const [lastMessages, setLastMessages] = useState<LastMessageMap>(new Map());
 
   const value = useContext(Context);
-  const { setLoggedInUser } = value;
+  const { loggedInUser } = value;
 
   const [startChat, { isLoading: starting }] = useStartChatMutation();
 
@@ -76,76 +79,50 @@ export default function ChatViewLg({
             />
 
             <div className="flex items-center gap-3">
-              <button onClick={() => router.push("/")} className="text-xl">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="white"
-                  className="size-6 cursor-pointer"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                  />
-                </svg>
-              </button>
-              <button
-                onClick={() => {
-                  handleSignOut();
-                  setLoggedInUser(null);
-                  router.push("/");
-                }}
-                className="text-xl"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="white"
-                  className="size-6 cursor-pointer"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                  />
-                </svg>
-              </button>
+              <Image
+                className="rounded-full"
+                src={loggedInUser?.avatar || "/assets/avatar-1.webp"}
+                alt="avatar"
+                width={36}
+                height={36}
+              />
             </div>
           </div>
 
-          <div className="mt-2">
-            <AIChatItem
-              isAi={isAi}
-              setAi={setAi}
-              setConversationId={setConversationId}
-            ></AIChatItem>
-            {chatList?.length &&
-              chatList?.map((c: Chat) => (
-                <ChatListItem
-                  lastMessageData={
-                    lastMessages.get(conversationId) as LastMessageValue
-                  }
-                  socketRef={socketRef}
-                  selected={c.conversationId === conversationId}
-                  setConversationId={setConversationId}
-                  setAi={setAi}
-                  conversation={c}
-                  key={c?.conversationId}
-                ></ChatListItem>
-              ))}
-          </div>
-
-          {onboardedUser && (
-            <Notification
-              onboardedUser={onboardedUser}
-              handleStartChat={handleStartChat}
-            ></Notification>
+          {isChatList ? (
+            <div className="mt-2">
+              <AIChatItem
+                isAi={isAi}
+                setAi={setAi}
+                setConversationId={setConversationId}
+              ></AIChatItem>
+              {chatList?.length &&
+                chatList?.map((c: Chat) => (
+                  <ChatListItem
+                    lastMessageData={
+                      lastMessages.get(conversationId) as LastMessageValue
+                    }
+                    socketRef={socketRef}
+                    selected={c.conversationId === conversationId}
+                    setConversationId={setConversationId}
+                    setAi={setAi}
+                    conversation={c}
+                    key={c?.conversationId}
+                  ></ChatListItem>
+                ))}
+            </div>
+          ) : (
+            <div>
+              <Notification
+                handleStartChat={handleStartChat}
+                onboardedUser={onboardedUser}
+              ></Notification>
+            </div>
           )}
+          <BottomBar
+            handleSignOut={handleSignOut}
+            setChatList={setChatList}
+          ></BottomBar>
         </div>
 
         <div className="flex-1 rounded-lg">

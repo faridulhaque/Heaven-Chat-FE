@@ -15,7 +15,7 @@ export default function Notification({
   return (
     <div
       className={`
-    w-full h-16 flex items-center px-3 absolute z-10 bg-[#2A2B32] border-[#FF4F4F]/80 bottom-0`}
+    w-full h-16 flex items-center px-3 z-10 bg-[#2A2B32] border-[#FF4F4F]/80 bottom-0`}
     >
       <Image
         className="rounded-full"
