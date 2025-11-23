@@ -28,6 +28,14 @@ const othersApi = apiSlice.injectEndpoints({
       providesTags: ["chat"],
     }),
 
+    getUsers: builder.query({
+      query: () => ({
+        url: `/chat/users`,
+        method: "GET",
+      }),
+      providesTags: ["chat", "blocking"],
+    }),
+
     getOneChat: builder.query({
       query: (id: string) => ({
         url: `/chat/conversation/${id}`,
@@ -71,4 +79,5 @@ export const {
   useBlockUserMutation,
   useCheckIfBlockedQuery,
   useDeleteChatMutation,
+  useGetUsersQuery,
 } = othersApi;
