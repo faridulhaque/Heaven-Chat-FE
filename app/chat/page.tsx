@@ -1,4 +1,3 @@
-"use client";
 
 import ChatViewCommon from "@/components/others/ChatViewCommon";
 import RequireUser from "@/components/others/RequireUser";
