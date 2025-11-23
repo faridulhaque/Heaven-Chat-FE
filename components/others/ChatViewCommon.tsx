@@ -72,7 +72,15 @@ export default function ChatViewCommon() {
         setOnboardedUser={setOnboardedUser}
         socketRef={socketRef}
       />
-      <ChatViewSm onboardedUser={onboardedUser} />
+      <ChatViewSm
+        recipientId={recipientId}
+        setRecipientId={setRecipientId}
+        onboardedUser={onboardedUser}
+        conversationId={conversationId}
+        setConversationId={setConversationId}
+        setOnboardedUser={setOnboardedUser}
+        socketRef={socketRef}
+      />
     </div>
   );
 }

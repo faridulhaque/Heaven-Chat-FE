@@ -9,12 +9,14 @@ type NotificationComponent = {
   user: UserPayload | null;
   handleStartChat: (value: string) => void;
   setIsAi: (value: boolean) => void;
+  setChatOpen?: (value: boolean) => void;
 };
 
 export default function Notification({
   user,
   handleStartChat,
   setIsAi,
+  setChatOpen,
 }: NotificationComponent) {
   const { loggedInUser } = useContext(Context);
 
@@ -28,17 +30,19 @@ export default function Notification({
   return (
     <>
       {!isBlocked && (
-        <div className="relative w-full h-16 flex items-center px-3 z-10 bg-[#2A2B32] border-[#FF4F4F]/80 bottom-0">
-          <Image
-            className="rounded-full"
-            src={user?.avatar || "/assets/avatar-3.webp"}
-            alt="avatar"
-            width={36}
-            height={36}
-          />
+        <div className="w-full h-16 flex items-center justify-between px-3 z-10 bg-[#2A2B32] border-[#FF4F4F]/80">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <Image
+              className="rounded-full"
+              src={user?.avatar || "/assets/avatar-3.webp"}
+              alt="avatar"
+              width={36}
+              height={36}
+            />
 
-          <div className="ml-3 text-white w-[70%] overflow-hidden">
-            <h2 className="text-sm font-medium truncate">{user?.name}</h2>
+            <h2 className="text-sm font-medium text-white truncate max-w-[140px]">
+              {user?.name}
+            </h2>
           </div>
 
           <button
@@ -46,8 +50,9 @@ export default function Notification({
             onClick={() => {
               handleStartChat(user?.userId as string);
               setIsAi(false);
+              setChatOpen?.(true);
             }}
-            className="text-white absolute right-3 top-3 opacity-90 text-xs btn px-2 py-2 rounded-md bg-[#FF4F4F] cursor-pointer"
+            className="text-white text-xs btn px-3 py-2 rounded-md bg-[#FF4F4F]"
           >
             Say Hi
           </button>

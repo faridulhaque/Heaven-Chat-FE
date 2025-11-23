@@ -10,6 +10,7 @@ type ChatListItemComponent = {
   selected: boolean;
   socketRef: React.RefObject<Socket | null>;
   lastMessageData: LastMessageValue;
+  setChatOpen?: (value: boolean) => void;
 };
 
 export default function ChatListItem({
@@ -19,6 +20,7 @@ export default function ChatListItem({
   socketRef,
   lastMessageData,
   selected,
+  setChatOpen,
 }: ChatListItemComponent) {
   const [isOnline, setIsOnline] = useState(false);
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -48,6 +50,7 @@ export default function ChatListItem({
         onClick={() => {
           setConversationId(conversation.conversationId);
           setAi(false);
+          setChatOpen?.(true);
         }}
         className={`w-full h-16 flex items-center px-3 relative cursor-pointer hover:bg-[#2A2B32] ${
           selected ? "bg-[#2A2B32]" : ""
