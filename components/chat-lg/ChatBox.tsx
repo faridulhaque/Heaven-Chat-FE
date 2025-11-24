@@ -95,7 +95,7 @@ export default function ChatBox({
   }, []);
 
   const { data: messagesData, isLoading: messagesLoading } =
-    useGetMessagesQuery<any>(conversationId);
+    useGetMessagesQuery<any>(conversationId, { skip: !conversationId });
 
   const [isOnline, setIsOnline] = useState(false);
 
@@ -116,7 +116,7 @@ export default function ChatBox({
 
   useEffect(() => {
     if (!messagesData || !messagesData.data) return;
-    setMessages(messagesData.data);
+    setMessages(messagesData?.data);
   }, [messagesData]);
 
   useEffect(() => {
@@ -186,7 +186,8 @@ export default function ChatBox({
           <Image
             className="rounded-full"
             src={
-              loadedConversation.counterParty.avatar || "/assets/avatar-1.webp"
+              loadedConversation?.counterParty?.avatar ||
+              "/assets/avatar-1.webp"
             }
             alt="avatar"
             width={36}
@@ -194,7 +195,7 @@ export default function ChatBox({
           />
 
           <h2 className="text-sm font-medium ml-3 text-white truncate flex-1">
-            {loadedConversation.counterParty.name}
+            {loadedConversation?.counterParty?.name}
             {isOnline && (
               <span className="w-2 h-2 rounded-full bg-green-500 ml-3 inline-block" />
             )}

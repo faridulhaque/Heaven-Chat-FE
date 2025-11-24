@@ -52,7 +52,7 @@ export default function Notification({
               setIsAi(false);
               setChatOpen?.(true);
             }}
-            className="text-white text-xs btn px-3 py-2 rounded-md bg-[#FF4F4F]"
+            className="cursor-pointer text-white text-xs btn px-3 py-2 rounded-md bg-[#FF4F4F]"
           >
             Say Hi
           </button>

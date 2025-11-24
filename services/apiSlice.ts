@@ -5,7 +5,7 @@ export const apiSlice = createApi({
   // baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_ROOT_API }),
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-    credentials: "include",
+    // credentials: "include",
 
     prepareHeaders: (headers) => {
       headers.set("Content-Type", "application/json");
