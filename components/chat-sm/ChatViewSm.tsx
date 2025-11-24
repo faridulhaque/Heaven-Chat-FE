@@ -31,6 +31,9 @@ type ChatViewSmComponent = {
   conversationId: string;
   setConversationId: (c: string) => void;
   socketRef: React.RefObject<Socket | null>;
+  setCallerId: (v: string) => void;
+  setCalleeId: (v: string) => void;
+  setCalleeName: (v: string) => void;
 };
 
 export default function ChatViewSm({
@@ -41,6 +44,9 @@ export default function ChatViewSm({
   setConversationId,
   setOnboardedUser,
   socketRef,
+  setCalleeId,
+  setCallerId,
+  setCalleeName,
 }: ChatViewSmComponent) {
   const [chatOpen, setChatOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
@@ -48,8 +54,6 @@ export default function ChatViewSm({
 
   const { data: usersData, isLoading: usersLoading } =
     useGetUsersQuery<any>("");
-
-  console.log("usersData", usersData);
 
   const [isChatList, setChatList] = useState(true);
   const [isAi, setAi] = useState(true);
@@ -160,25 +164,23 @@ export default function ChatViewSm({
 
       {chatOpen && (
         <div className="w-full h-full bg-[#1E1F24] overflow-y-auto">
-          <div className="h-1/12 sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 pt-5 pb-4 px-3 flex items-center justify-between">
+          {/* <div className="h-1/12 sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 pt-5 pb-4 px-3 flex items-center justify-between">
             <button
               className="px-4 py-2 bg-[#292933] rounded-3xl"
               onClick={() => setChatOpen(false)}
             >
               Back
             </button>
-
-            <div className="flex items-center gap-3">
-              <button className="text-xl">🏠</button>
-              <button className="text-xl">🚪</button>
-            </div>
-          </div>
+          </div> */}
 
           <div className="h-11/12">
             {isAi ? (
               <ChatBoxAi></ChatBoxAi>
             ) : (
               <ChatBox
+                setCalleeName={setCalleeName}
+                setCalleeId={setCalleeId}
+                setCallerId={setCallerId}
                 socketRef={socketRef}
                 conversationId={conversationId}
                 setAi={setAi}

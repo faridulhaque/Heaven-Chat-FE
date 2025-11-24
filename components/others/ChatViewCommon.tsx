@@ -8,11 +8,16 @@ import { UserPayload } from "@/services/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Loading from "./Loading";
+import CallModal from "../chat-others/CallModal";
 
 export default function ChatViewCommon() {
   const socketRef = useRef<Socket | null>(null);
   const [onboardedUser, setOnboardedUser] = useState<UserPayload | null>(null);
   const value = useContext(Context);
+
+  const [callerId, setCallerId] = useState("");
+  const [calleeId, setCalleeId] = useState("");
+  const [calleeName, setCalleeName] = useState("");
 
   const [conversationId, setConversationId] = useState("");
   const [recipientId, setRecipientId] = useState("");
@@ -30,12 +35,6 @@ export default function ChatViewCommon() {
       console.warn("No token found in localStorage");
       return;
     }
-
-    if (socketRef.current && socketRef.current.connected) {
-      console.log("Socket already connected:", socketRef.current.id);
-      return;
-    }
-
     socketRef.current = io(`${process.env.NEXT_PUBLIC_BASE_URL}/chat`, {
       path: "/socket.io",
       transports: ["websocket"],
@@ -43,6 +42,14 @@ export default function ChatViewCommon() {
         token: token,
       },
     });
+
+    if (socketRef.current && socketRef.current.connected) {
+      console.log("Socket already connected:", socketRef.current.id);
+      return;
+    }
+
+    if (value.loggedInUser?.userId)
+      socketRef.current.emit("join", value.loggedInUser?.userId);
 
     socketRef.current.on("new-user", (data: any) => {
       if (blockCheck?.data === false) {
@@ -64,6 +71,9 @@ export default function ChatViewCommon() {
   return (
     <div>
       <ChatViewLg
+        setCalleeName={setCalleeName}
+        setCalleeId={setCalleeId}
+        setCallerId={setCallerId}
         recipientId={recipientId}
         setRecipientId={setRecipientId}
         onboardedUser={onboardedUser}
@@ -73,6 +83,9 @@ export default function ChatViewCommon() {
         socketRef={socketRef}
       />
       <ChatViewSm
+        setCalleeName={setCalleeName}
+        setCalleeId={setCalleeId}
+        setCallerId={setCallerId}
         recipientId={recipientId}
         setRecipientId={setRecipientId}
         onboardedUser={onboardedUser}
@@ -81,6 +94,15 @@ export default function ChatViewCommon() {
         setOnboardedUser={setOnboardedUser}
         socketRef={socketRef}
       />
+
+      <CallModal
+        calleeName={calleeName}
+        calleeId={calleeId}
+        callerId={callerId}
+        socketRef={socketRef}
+        setCalleeId={setCalleeId}
+        setCallerId={setCallerId}
+      ></CallModal>
     </div>
   );
 }

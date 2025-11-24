@@ -30,9 +30,12 @@ type ChatViewLgComponent = {
   recipientId: string;
   setOnboardedUser: (u: UserPayload | null) => void;
   setRecipientId: (v: string) => void;
+  setCallerId: (v: string) => void;
+  setCalleeId: (v: string) => void;
   conversationId: string;
   setConversationId: (c: string) => void;
   socketRef: React.RefObject<Socket | null>;
+  setCalleeName: (v: string) => void;
 };
 
 export default function ChatViewLg({
@@ -43,14 +46,15 @@ export default function ChatViewLg({
   setConversationId,
   setOnboardedUser,
   socketRef,
+  setCalleeId,
+  setCallerId,
+  setCalleeName,
 }: ChatViewLgComponent) {
   const [searchParam, setSearchParam] = useState("");
   const [searchedData, setSearchedData] = useState<Chat[] | []>([]);
 
   const { data: usersData, isLoading: usersLoading } =
     useGetUsersQuery<any>("");
-
-  console.log("usersData", usersData);
 
   const [isChatList, setChatList] = useState(true);
   const [isAi, setAi] = useState(true);
@@ -85,7 +89,6 @@ export default function ChatViewLg({
   };
 
   if (chatLoading | usersLoading) return <Loading></Loading>;
-  console.log("searchdata", searchedData);
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -163,6 +166,9 @@ export default function ChatViewLg({
             <ChatBoxAi></ChatBoxAi>
           ) : (
             <ChatBox
+              setCalleeName={setCalleeName}
+              setCalleeId={setCalleeId}
+              setCallerId={setCallerId}
               socketRef={socketRef}
               conversationId={conversationId}
               setAi={setAi}

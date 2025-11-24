@@ -27,6 +27,9 @@ type ChatBoxComponent = {
   setAi: (v: boolean) => void;
   setLastMessages: (value: LastMessageMap) => void;
   lastMessages: LastMessageMap;
+  setCallerId: (v: string) => void;
+  setCalleeId: (v: string) => void;
+  setCalleeName: (v: string) => void;
 };
 
 export default function ChatBox({
@@ -35,14 +38,14 @@ export default function ChatBox({
   setAi,
   setLastMessages,
   lastMessages,
+  setCalleeId,
+  setCallerId,
+  setCalleeName,
 }: ChatBoxComponent) {
   const value = useContext(Context);
   const { loggedInUser } = value;
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isBlocker, setIsBlocker] = useState(false);
-
-  const [callerId, setCallerId] = useState("");
-  const [calleeId, setCalleeId] = useState("");
 
   const [messageBody, setMessageBody] = useState<TMessageDataFE>({
     to: "",
@@ -67,10 +70,6 @@ export default function ChatBox({
       skip:
         !loadedConversation?.members || loadedConversation?.members?.length < 2,
     });
-
-  console.log("loaded conversatin members", loadedConversation?.members);
-
-  console.log("block check", blockCheck);
 
   const isBlocked: boolean = blockCheck?.data as boolean;
 
@@ -104,6 +103,7 @@ export default function ChatBox({
     if (!socket) return;
 
     socket.emit("is_online", loadedConversation?.counterParty?.userId);
+    if (loggedInUser?.userId) socket.emit("join", loggedInUser?.userId);
 
     socket.on("is_online", (value) => {
       setIsOnline(value);
@@ -129,8 +129,6 @@ export default function ChatBox({
     );
     if (found) setIsBlocker(true);
   }, [loggedInUser?.blocked, loadedConversation?.counterParty?.userId]);
-
-  console.log("isblockedby me", isBlocker);
 
   const sendMessage = () => {
     if (!loadedConversation?.counterParty) return;
@@ -207,9 +205,8 @@ export default function ChatBox({
                 <button
                   onClick={() => {
                     setCallerId(loggedInUser?.userId as string);
-                    setCalleeId(
-                      isOnline ? loadedConversation?.counterParty?.userId : ""
-                    );
+                    setCalleeId(loadedConversation?.counterParty?.userId);
+                    setCalleeName(loadedConversation?.counterParty?.name);
                   }}
                   className="mr-5 cursor-pointer"
                 >
@@ -234,7 +231,6 @@ export default function ChatBox({
                     const res = await block(
                       loadedConversation.counterParty.userId
                     );
-                    console.log("res blocked", res);
                   }}
                 >
                   <svg
@@ -260,7 +256,6 @@ export default function ChatBox({
             {/* <button
               onClick={async () => {
                 const res = await deleteChat(conversationId);
-                console.log("delete res", res);
                 setAi(true);
               }}
             >
@@ -305,7 +300,6 @@ export default function ChatBox({
                     const res = await block(
                       loadedConversation.counterParty.userId
                     );
-                    console.log("res blocked", res);
                   }}
                 >
                   Unblock Now
@@ -358,14 +352,6 @@ export default function ChatBox({
           </div>
         )}
       </div>
-
-      <CallModal
-        calleeId={calleeId}
-        callerId={callerId}
-        socketRef={socketRef}
-        setCalleeId={setCalleeId}
-        setCallerId={setCallerId}
-      ></CallModal>
     </>
   );
 }

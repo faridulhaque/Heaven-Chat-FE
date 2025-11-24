@@ -1,11 +1,13 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import { Context } from "@/app/layout";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Peer from "simple-peer";
 import { Socket } from "socket.io-client";
 
 type CallModalProps = {
   callerId: string;
+  calleeName: string;
   calleeId: string;
   socketRef: React.RefObject<Socket | null>;
   setCallerId: (v: string) => void;
@@ -28,11 +30,13 @@ function CallModal({
   socketRef,
   setCallerId,
   setCalleeId,
+  calleeName,
 }: CallModalProps) {
   const [callState, setCallState] = useState<
     "idle" | "calling" | "receiving" | "inCall" | "ended"
   >("idle");
   const [incomingSignal, setIncomingSignal] = useState<any>(null);
+  const { loggedInUser } = useContext(Context);
 
   const peerRef = useRef<Peer.Instance | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -44,12 +48,16 @@ function CallModal({
     const socket = socketRef.current;
     if (!socket) return;
 
-    const onSignal = ({ from, data }: any) => {
+    const onSignal = ({ from, data, callerName }: any) => {
+      console.log("from signal", from);
+      console.log("from data", data);
       if (data?.type === "offer") {
-        setIncomingSignal({ from, data });
+        setIncomingSignal({ from, data, callerName });
         setCallState("receiving");
         try {
-          ringToneRef.current?.play();
+          if (ringToneRef.current && ringToneRef.current.paused) {
+            ringToneRef.current.play();
+          }
         } catch {}
       } else if (peerRef.current) {
         peerRef.current.signal(data);
@@ -78,11 +86,11 @@ function CallModal({
     };
   }, [socketRef.current]);
 
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-    if (callerId) socket.emit("join", callerId);
-  }, [callerId]);
+  // useEffect(() => {
+  //   const socket = socketRef.current;
+  //   if (!socket) return;
+  //   if (loggedInUser?.userId) socket.emit("join", loggedInUser?.userId);
+  // }, [loggedInUser]);
 
   const createPeer = (opts: { initiator: boolean; stream: MediaStream }) => {
     const peer = new Peer({
@@ -116,7 +124,9 @@ function CallModal({
 
     setCallState("calling");
     try {
-      dialToneRef.current?.play();
+      if (dialToneRef.current && dialToneRef.current.paused) {
+        dialToneRef.current.play();
+      }
     } catch {}
 
     try {
@@ -127,7 +137,12 @@ function CallModal({
       peerRef.current = peer;
 
       peer.on("signal", (data: any) => {
-        socket.emit("signal", { from: callerId, to: calleeId, data });
+        socket.emit("signal", {
+          from: callerId,
+          to: calleeId,
+          data,
+          callerName: loggedInUser?.name,
+        });
       });
 
       peer.on("stream", (remoteStream: MediaStream) => {
@@ -228,22 +243,41 @@ function CallModal({
     const socket = socketRef.current;
     if (!socket) return;
 
-    if (calleeId) socket.emit("end_call", { from: callerId, to: calleeId });
-    if (incomingSignal?.from)
+    if (calleeId) {
+      socket.emit("end_call", { from: callerId, to: calleeId });
+    }
+
+    if (incomingSignal?.from) {
       socket.emit("end_call", { from: callerId, to: incomingSignal.from });
+    }
 
     cleanupCall();
-    setCallState("ended");
+
+    // Reset modal state so UI works on second open
+    setCallState("idle");
+    setIncomingSignal(null);
+    peerRef.current = null;
+    localStreamRef.current = null;
+    remoteAudioRef.current = null;
+
     setCallerId("");
     setCalleeId("");
   };
 
-  if (!callerId) return null;
+  const resetModal = () => {
+    setCallState("idle");
+    setIncomingSignal(null);
+    peerRef.current = null;
+    localStreamRef.current = null;
+    remoteAudioRef.current = null;
+  };
+
+  console.log("incoming signal", incomingSignal);
 
   return (
     <>
-      {callerId && (
-        <div className="w-full h-screen fixed z-20 top-0 left-0 bg-black/60 flex items-center justify-center">
+      {callerId && !incomingSignal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-black text-white border border-red-400/20 rounded-lg p-8 w-[380px]">
             <audio
               ref={dialToneRef}
@@ -251,29 +285,10 @@ function CallModal({
               preload="auto"
               loop
             />
-            <audio
-              ref={ringToneRef}
-              src="/sounds/ringtone.mp3"
-              preload="auto"
-              loop
-            />
 
-            {callState === "idle" && !calleeId && (
+            {callState === "idle" && (
               <div className="text-center space-y-4">
-                <p>Callee is offline</p>
-                <button
-                  className="w-full py-2 rounded text-white"
-                  style={{ backgroundColor: "#FF5F5F" }}
-                  onClick={() => setCallerId("")}
-                >
-                  Close
-                </button>
-              </div>
-            )}
-
-            {callState === "idle" && calleeId && (
-              <div className="text-center space-y-4">
-                <p>Ready to call {calleeId}</p>
+                <p>Ready to call {calleeName}?</p>
                 <button
                   className="bg-green-600 py-2 w-full rounded"
                   onClick={startCall}
@@ -282,7 +297,11 @@ function CallModal({
                 </button>
                 <button
                   className="bg-red-600 py-2 w-full rounded"
-                  onClick={() => setCallerId("")}
+                  onClick={() => {
+                    resetModal();
+                    setCallerId("");
+                    setCalleeId("");
+                  }}
                 >
                   Cancel
                 </button>
@@ -291,7 +310,7 @@ function CallModal({
 
             {callState === "calling" && (
               <div className="text-center space-y-4">
-                <p>Calling {calleeId}...</p>
+                <p>Calling {calleeName}...</p>
                 <button
                   className="bg-red-600 py-2 w-full rounded"
                   onClick={endCall}
@@ -300,33 +319,36 @@ function CallModal({
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
 
-            {callState === "receiving" && incomingSignal && (
+      {incomingSignal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-black text-white border border-red-400/20 rounded-lg p-8 w-[380px]">
+            <audio
+              ref={ringToneRef}
+              src="/sounds/ringtone.mp3"
+              preload="auto"
+              loop
+            />
+
+            {callState === "receiving" && (
               <div className="text-center space-y-4">
-                <p>{incomingSignal.from} is calling you</p>
+                <p>{incomingSignal?.callerName} is calling you</p>
+
                 <button
                   className="bg-green-600 py-2 w-full rounded"
                   onClick={answerCall}
                 >
                   Accept
                 </button>
+
                 <button
                   className="bg-red-600 py-2 w-full rounded"
                   onClick={endCall}
                 >
                   Decline
-                </button>
-              </div>
-            )}
-
-            {callState === "inCall" && (
-              <div className="text-center space-y-4">
-                <p>In Call</p>
-                <button
-                  className="bg-red-600 py-2 w-full rounded"
-                  onClick={endCall}
-                >
-                  End Call
                 </button>
               </div>
             )}
