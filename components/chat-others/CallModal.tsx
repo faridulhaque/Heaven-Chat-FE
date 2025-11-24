@@ -55,8 +55,11 @@ function CallModal({
         setIncomingSignal({ from, data, callerName });
         setCallState("receiving");
         try {
-          if (ringToneRef.current && ringToneRef.current.paused) {
-            ringToneRef.current.play();
+          console.log("ringtone above");
+          if (ringToneRef.current) {
+            console.log("ringing");
+            ringToneRef.current.muted = false;
+            ringToneRef.current.play().catch(() => {});
           }
         } catch {}
       } else if (peerRef.current) {
@@ -276,16 +279,11 @@ function CallModal({
 
   return (
     <>
+      <audio ref={ringToneRef} src="/sounds/ringtone.mp3" preload="auto" loop />
+      <audio ref={dialToneRef} src="/sounds/dialtone.mp3" preload="auto" loop />
       {callerId && !incomingSignal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-black text-white border border-red-400/20 rounded-lg p-8 w-[380px]">
-            <audio
-              ref={dialToneRef}
-              src="/sounds/dialtone.mp3"
-              preload="auto"
-              loop
-            />
-
             {callState === "idle" && (
               <div className="text-center space-y-4">
                 <p>Ready to call {calleeName}?</p>
@@ -326,13 +324,6 @@ function CallModal({
       {incomingSignal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-black text-white border border-red-400/20 rounded-lg p-8 w-[380px]">
-            <audio
-              ref={ringToneRef}
-              src="/sounds/ringtone.mp3"
-              preload="auto"
-              loop
-            />
-
             {callState === "receiving" && (
               <div className="text-center space-y-4">
                 <p>{incomingSignal?.callerName} is calling you</p>
