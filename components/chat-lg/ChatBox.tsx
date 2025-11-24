@@ -206,7 +206,9 @@ export default function ChatBox({
                 <button
                   onClick={() => {
                     setCallerId(loggedInUser?.userId as string);
-                    setCalleeId(loadedConversation?.counterParty?.userId);
+                    setCalleeId(
+                      isOnline ? loadedConversation?.counterParty?.userId : ""
+                    );
                   }}
                   className="mr-5 cursor-pointer"
                 >
