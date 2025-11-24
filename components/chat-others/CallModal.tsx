@@ -1,5 +1,6 @@
 "use client";
 import { Context } from "@/app/layout";
+import { CallStateType } from "@/services/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Peer from "simple-peer";
@@ -12,6 +13,17 @@ type CallModalProps = {
   socketRef: React.RefObject<Socket | null>;
   setCallerId: (v: string) => void;
   setCalleeId: (v: string) => void;
+  incomingSignal: any;
+  setIncomingSignal: (v: any) => void;
+  callState: CallStateType;
+  setCallState: (v: CallStateType) => void;
+  ringToneRef: React.RefObject<HTMLAudioElement | null>;
+  peerRef: React.RefObject<Peer.Instance | null>;
+  localStreamRef: React.RefObject<MediaStream | null>;
+  remoteAudioRef: React.RefObject<HTMLAudioElement | null>;
+  dialToneRef: React.RefObject<HTMLAudioElement | null>;
+  resetModal: () => void;
+  cleanupCall: () => void;
 };
 
 const ICE_CONFIG = {
@@ -31,63 +43,19 @@ function CallModal({
   setCallerId,
   setCalleeId,
   calleeName,
+  incomingSignal,
+  setIncomingSignal,
+  callState,
+  setCallState,
+  peerRef,
+  ringToneRef,
+  cleanupCall,
+  resetModal,
+  localStreamRef,
+  remoteAudioRef,
+  dialToneRef
 }: CallModalProps) {
-  const [callState, setCallState] = useState<
-    "idle" | "calling" | "receiving" | "inCall" | "ended"
-  >("idle");
-  const [incomingSignal, setIncomingSignal] = useState<any>(null);
   const { loggedInUser } = useContext(Context);
-
-  const peerRef = useRef<Peer.Instance | null>(null);
-  const localStreamRef = useRef<MediaStream | null>(null);
-  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
-  const dialToneRef = useRef<HTMLAudioElement | null>(null);
-  const ringToneRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
-
-    const onSignal = ({ from, data, callerName }: any) => {
-      console.log("from signal", from);
-      console.log("from data", data);
-      if (data?.type === "offer") {
-        setIncomingSignal({ from, data, callerName });
-        setCallState("receiving");
-        try {
-          console.log("ringtone above");
-          if (ringToneRef.current) {
-            console.log("ringing");
-            ringToneRef.current.muted = false;
-            ringToneRef.current.play().catch(() => {});
-          }
-        } catch {}
-      } else if (peerRef.current) {
-        peerRef.current.signal(data);
-      }
-    };
-
-    const onEndCall = () => {
-      cleanupCall();
-      setCallState("ended");
-      setCallerId("");
-      setCalleeId("");
-    };
-
-    socket.on("signal", onSignal);
-    socket.on("end_call", onEndCall);
-    socket.on("busy", () => {
-      toast.error("User is busy");
-      setCallerId("");
-      setCalleeId("");
-    });
-
-    return () => {
-      socket.off("signal", onSignal);
-      socket.off("end_call", onEndCall);
-      socket.off("busy");
-    };
-  }, [socketRef.current]);
 
   // useEffect(() => {
   //   const socket = socketRef.current;
@@ -207,41 +175,6 @@ function CallModal({
     }
   };
 
-  const cleanupCall = () => {
-    try {
-      dialToneRef.current?.pause();
-    } catch {}
-    try {
-      ringToneRef.current?.pause();
-    } catch {}
-
-    try {
-      peerRef.current?.removeAllListeners?.();
-      peerRef.current?.destroy();
-    } catch {}
-
-    if (localStreamRef.current) {
-      try {
-        localStreamRef.current.getTracks().forEach((t) => t.stop());
-      } catch {}
-      localStreamRef.current = null;
-    }
-
-    if (remoteAudioRef.current) {
-      try {
-        remoteAudioRef.current.pause();
-        if (remoteAudioRef.current.srcObject)
-          remoteAudioRef.current.srcObject = null;
-        if (remoteAudioRef.current.parentElement === document.body)
-          remoteAudioRef.current.remove();
-      } catch {}
-      remoteAudioRef.current = null;
-    }
-
-    setIncomingSignal(null);
-    peerRef.current = null;
-  };
-
   const endCall = () => {
     const socket = socketRef.current;
     if (!socket) return;
@@ -257,22 +190,7 @@ function CallModal({
     cleanupCall();
 
     // Reset modal state so UI works on second open
-    setCallState("idle");
-    setIncomingSignal(null);
-    peerRef.current = null;
-    localStreamRef.current = null;
-    remoteAudioRef.current = null;
-
-    setCallerId("");
-    setCalleeId("");
-  };
-
-  const resetModal = () => {
-    setCallState("idle");
-    setIncomingSignal(null);
-    peerRef.current = null;
-    localStreamRef.current = null;
-    remoteAudioRef.current = null;
+    resetModal();
   };
 
   console.log("incoming signal", incomingSignal);

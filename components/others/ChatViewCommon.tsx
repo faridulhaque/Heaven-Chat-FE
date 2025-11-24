@@ -4,16 +4,27 @@ import { Context } from "@/app/layout";
 import ChatViewLg from "@/components/chat-lg/ChatViewLg";
 import ChatViewSm from "@/components/chat-sm/ChatViewSm";
 import { useCheckIfBlockedQuery } from "@/services/queries/othersApi";
-import { UserPayload } from "@/services/types";
+import { CallStateType, UserPayload } from "@/services/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Loading from "./Loading";
 import CallModal from "../chat-others/CallModal";
+import Peer from "simple-peer";
+import toast from "react-hot-toast";
 
 export default function ChatViewCommon() {
   const socketRef = useRef<Socket | null>(null);
+  const { loggedInUser } = useContext(Context);
+
   const [onboardedUser, setOnboardedUser] = useState<UserPayload | null>(null);
   const value = useContext(Context);
+  const [incomingSignal, setIncomingSignal] = useState<any>(null);
+  const [callState, setCallState] = useState<CallStateType>("idle");
+  const ringToneRef = useRef<HTMLAudioElement | null>(null);
+  const peerRef = useRef<Peer.Instance | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+  const dialToneRef = useRef<HTMLAudioElement | null>(null);
 
   const [callerId, setCallerId] = useState("");
   const [calleeId, setCalleeId] = useState("");
@@ -66,10 +77,99 @@ export default function ChatViewCommon() {
     };
   }, []);
 
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const onSignal = ({ from, data, callerName }: any) => {
+      console.log("from signal", from);
+      console.log("from data", data);
+      if (data?.type === "offer") {
+        setIncomingSignal({ from, data, callerName });
+        setCallState("receiving");
+        try {
+          console.log("ringtone above");
+          if (ringToneRef.current) {
+            console.log("ringing");
+            ringToneRef.current.muted = false;
+            ringToneRef.current.play().catch(() => {});
+          }
+        } catch {}
+      } else if (peerRef.current) {
+        peerRef.current.signal(data);
+      }
+    };
+
+    const onEndCall = () => {
+      cleanupCall();
+      resetModal();
+    };
+
+    socket.on("signal", onSignal);
+    socket.on("end_call", onEndCall);
+    socket.on("busy", () => {
+      toast.error("User is busy");
+      setCallerId("");
+      setCalleeId("");
+    });
+
+    return () => {
+      socket.off("signal", onSignal);
+      socket.off("end_call", onEndCall);
+      socket.off("busy");
+    };
+  }, [socketRef?.current, loggedInUser?.userId,]);
+
+  const resetModal = () => {
+    setCallState("idle");
+    setIncomingSignal(null);
+    peerRef.current = null;
+    localStreamRef.current = null;
+    remoteAudioRef.current = null;
+    setCallerId("");
+    setCalleeId("");
+  };
+
+  const cleanupCall = () => {
+    try {
+      dialToneRef.current?.pause();
+    } catch {}
+    try {
+      ringToneRef.current?.pause();
+    } catch {}
+
+    try {
+      peerRef.current?.removeAllListeners?.();
+      peerRef.current?.destroy();
+    } catch {}
+
+    if (localStreamRef.current) {
+      try {
+        localStreamRef.current.getTracks().forEach((t) => t.stop());
+      } catch {}
+      localStreamRef.current = null;
+    }
+
+    if (remoteAudioRef.current) {
+      try {
+        remoteAudioRef.current.pause();
+        if (remoteAudioRef.current.srcObject)
+          remoteAudioRef.current.srcObject = null;
+        if (remoteAudioRef.current.parentElement === document.body)
+          remoteAudioRef.current.remove();
+      } catch {}
+      remoteAudioRef.current = null;
+    }
+
+    setIncomingSignal(null);
+    peerRef.current = null;
+  };
+
   if (blockCheck) return <Loading></Loading>;
 
   return (
     <div>
+      
       <ChatViewLg
         setCalleeName={setCalleeName}
         setCalleeId={setCalleeId}
@@ -96,6 +196,17 @@ export default function ChatViewCommon() {
       />
 
       <CallModal
+        remoteAudioRef={remoteAudioRef}
+        dialToneRef={dialToneRef}
+        localStreamRef={localStreamRef}
+        resetModal={resetModal}
+        cleanupCall={cleanupCall}
+        ringToneRef={ringToneRef}
+        peerRef={peerRef}
+        incomingSignal={incomingSignal}
+        setIncomingSignal={setIncomingSignal}
+        callState={callState}
+        setCallState={setCallState}
         calleeName={calleeName}
         calleeId={calleeId}
         callerId={callerId}

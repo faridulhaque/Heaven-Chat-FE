@@ -47,3 +47,10 @@ export type LastMessageValue = {
 };
 
 export type LastMessageMap = Map<string, LastMessageValue>;
+
+export type CallStateType =
+  | "idle"
+  | "calling"
+  | "receiving"
+  | "inCall"
+  | "ended";
