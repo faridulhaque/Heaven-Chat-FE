@@ -34,6 +34,8 @@ type ChatViewSmComponent = {
   setCallerId: (v: string) => void;
   setCalleeId: (v: string) => void;
   setCalleeName: (v: string) => void;
+  setChatOpen: (v: boolean) => void;
+  chatOpen: boolean;
 };
 
 export default function ChatViewSm({
@@ -47,8 +49,9 @@ export default function ChatViewSm({
   setCalleeId,
   setCallerId,
   setCalleeName,
+  chatOpen,
+  setChatOpen,
 }: ChatViewSmComponent) {
-  const [chatOpen, setChatOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
   const [searchedData, setSearchedData] = useState<Chat[] | []>([]);
 
@@ -75,7 +78,7 @@ export default function ChatViewSm({
       ) || [];
 
     setSearchedData(filtered);
-  }, [searchParam, chatList]);
+  }, [searchParam]);
 
   const handleStartChat = async (recipientId: string) => {
     const res: any = await startChat({
@@ -120,11 +123,15 @@ export default function ChatViewSm({
 
           {isChatList ? (
             <div className="mt-2">
-              <AIChatItem
-                isAi={isAi}
-                setAi={setAi}
-                setConversationId={setConversationId}
-              ></AIChatItem>
+              {!searchParam && (
+                <AIChatItem
+                  setChatOpen={setChatOpen}
+                  isAi={isAi}
+                  setAi={setAi}
+                  setConversationId={setConversationId}
+                />
+              )}
+
               {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
                 <ChatListItem
                   setChatOpen={setChatOpen}
@@ -151,31 +158,29 @@ export default function ChatViewSm({
                     key={u.email}
                     user={u}
                     handleStartChat={handleStartChat}
-                  ></Notification>
+                  />
                 ))}
             </div>
           )}
-          <BottomBar
-            handleSignOut={handleSignOut}
-            setChatList={setChatList}
-          ></BottomBar>
+
+          <BottomBar handleSignOut={handleSignOut} setChatList={setChatList} />
         </div>
       )}
 
       {chatOpen && (
         <div className="w-full h-full bg-[#1E1F24] overflow-y-auto">
-          {/* <div className="h-1/12 sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 pt-5 pb-4 px-3 flex items-center justify-between">
+          <div className="sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 px-3 py-3 flex items-center">
             <button
-              className="px-4 py-2 bg-[#292933] rounded-3xl"
               onClick={() => setChatOpen(false)}
+              className="px-4 py-2 bg-[#292933] rounded-3xl text-white cursor-pointer"
             >
               Back
             </button>
-          </div> */}
+          </div>
 
           <div className="h-11/12">
             {isAi ? (
-              <ChatBoxAi></ChatBoxAi>
+              <ChatBoxAi />
             ) : (
               <ChatBox
                 setCalleeName={setCalleeName}

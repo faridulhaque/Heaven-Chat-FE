@@ -36,6 +36,8 @@ type ChatViewLgComponent = {
   setConversationId: (c: string) => void;
   socketRef: React.RefObject<Socket | null>;
   setCalleeName: (v: string) => void;
+  setChatOpen: (v: boolean) => void;
+  chatOpen: boolean;
 };
 
 export default function ChatViewLg({
@@ -49,6 +51,8 @@ export default function ChatViewLg({
   setCalleeId,
   setCallerId,
   setCalleeName,
+  setChatOpen,
+  chatOpen,
 }: ChatViewLgComponent) {
   const [searchParam, setSearchParam] = useState("");
   const [searchedData, setSearchedData] = useState<Chat[] | []>([]);
@@ -76,7 +80,7 @@ export default function ChatViewLg({
       ) || [];
 
     setSearchedData(filtered);
-  }, [searchParam, chatList]);
+  }, [searchParam]);
 
   const handleStartChat = async (recipientId: string) => {
     const res: any = await startChat({
@@ -89,6 +93,9 @@ export default function ChatViewLg({
   };
 
   if (chatLoading | usersLoading) return <Loading></Loading>;
+  console.log("search param", searchParam);
+  console.log("searched data", searchedData);
+  console.log("chat list", chatList);
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -98,11 +105,11 @@ export default function ChatViewLg({
               <input
                 onChange={(e) => setSearchParam(e.target.value)}
                 type="text"
-                className="w-full text-white px-4 py-2 bg-[#292933] rounded-3xl outline-none border-none"
+                className="w-full text-[#E5E5E5] px-4 py-2 bg-[#292933] rounded-3xl outline-none border-none"
                 placeholder="Search"
               />
             ) : (
-              <h3 className="px-4 py-2 text-white text-lg">
+              <h3 className="px-4 py-2 text-[#E5E5E5] text-lg">
                 Chat with new users
               </h3>
             )}
@@ -120,26 +127,28 @@ export default function ChatViewLg({
 
           {isChatList ? (
             <div className="mt-2">
-              <AIChatItem
-                isAi={isAi}
-                setAi={setAi}
-                setConversationId={setConversationId}
-              ></AIChatItem>
-              {(searchedData?.length ? searchedData : chatList)?.map(
-                (c: Chat) => (
-                  <ChatListItem
-                    lastMessageData={
-                      lastMessages.get(conversationId) as LastMessageValue
-                    }
-                    socketRef={socketRef}
-                    selected={c.conversationId === conversationId}
-                    setConversationId={setConversationId}
-                    setAi={setAi}
-                    conversation={c}
-                    key={c.conversationId}
-                  />
-                )
+              {!searchParam && (
+                <AIChatItem
+                  setChatOpen={setChatOpen}
+                  isAi={isAi}
+                  setAi={setAi}
+                  setConversationId={setConversationId}
+                />
               )}
+
+              {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
+                <ChatListItem
+                  lastMessageData={
+                    lastMessages.get(conversationId) as LastMessageValue
+                  }
+                  socketRef={socketRef}
+                  selected={c.conversationId === conversationId}
+                  setConversationId={setConversationId}
+                  setAi={setAi}
+                  conversation={c}
+                  key={c.conversationId}
+                />
+              ))}
             </div>
           ) : (
             <div>
@@ -151,19 +160,17 @@ export default function ChatViewLg({
                     key={u.email}
                     user={u}
                     handleStartChat={handleStartChat}
-                  ></Notification>
+                  />
                 ))}
             </div>
           )}
-          <BottomBar
-            handleSignOut={handleSignOut}
-            setChatList={setChatList}
-          ></BottomBar>
+
+          <BottomBar handleSignOut={handleSignOut} setChatList={setChatList} />
         </div>
 
         <div className="flex-1 rounded-lg">
           {isAi ? (
-            <ChatBoxAi></ChatBoxAi>
+            <ChatBoxAi />
           ) : (
             <ChatBox
               setCalleeName={setCalleeName}

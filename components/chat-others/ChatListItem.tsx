@@ -51,9 +51,8 @@ export default function ChatListItem({
           setAi(false);
           setChatOpen?.(true);
         }}
-        className={`w-full h-16 flex items-center px-3 relative cursor-pointer hover:bg-[#2A2B32] ${
-          selected ? "bg-[#2A2B32]" : ""
-        }`}
+        className={`w-full h-16 flex items-center px-3 relative cursor-pointer 
+  hover:bg-[#2D2E34] ${selected ? "bg-[#33343A]" : "bg-transparent"}`}
       >
         <Image
           className="rounded-full"

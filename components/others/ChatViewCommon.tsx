@@ -16,6 +16,8 @@ export default function ChatViewCommon() {
   const socketRef = useRef<Socket | null>(null);
   const { loggedInUser } = useContext(Context);
 
+  const [chatOpen, setChatOpen] = useState(false);
+
   const [onboardedUser, setOnboardedUser] = useState<UserPayload | null>(null);
   const value = useContext(Context);
   const [incomingSignal, setIncomingSignal] = useState<any>(null);
@@ -118,7 +120,7 @@ export default function ChatViewCommon() {
       socket.off("end_call", onEndCall);
       socket.off("busy");
     };
-  }, [socketRef?.current, loggedInUser?.userId,]);
+  }, [socketRef?.current, loggedInUser?.userId]);
 
   const resetModal = () => {
     setCallState("idle");
@@ -169,8 +171,9 @@ export default function ChatViewCommon() {
 
   return (
     <div>
-      
       <ChatViewLg
+        chatOpen={chatOpen}
+        setChatOpen={setChatOpen}
         setCalleeName={setCalleeName}
         setCalleeId={setCalleeId}
         setCallerId={setCallerId}
@@ -183,6 +186,8 @@ export default function ChatViewCommon() {
         socketRef={socketRef}
       />
       <ChatViewSm
+        chatOpen={chatOpen}
+        setChatOpen={setChatOpen}
         setCalleeName={setCalleeName}
         setCalleeId={setCalleeId}
         setCallerId={setCallerId}
