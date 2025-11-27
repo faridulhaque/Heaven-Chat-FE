@@ -57,7 +57,7 @@
     npm install
 
 
-3. **Create a .env.local file and add the base url your Firebase config:**
+3. **Create a .env.local file and add:**
 
 ```env
 NEXT_PUBLIC_BASE_URL=
