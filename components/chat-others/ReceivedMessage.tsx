@@ -8,16 +8,18 @@ type ReceivedMessageComponent = {
 
 export default function ReceivedMessage({ message }: ReceivedMessageComponent) {
   return (
-    <div className="w-full flex justify-start my-2">
-      <Image
-        className="rounded-full mr-3"
-        src="/assets/avatar-1.webp"
-        alt="avatar"
-        width={36}
-        height={36}
-      />
+    <div className="w-full flex items-start my-4">
+      <div className="mr-3 shrink-0">
+        <Image
+          className="rounded-full"
+          src="/assets/avatar-1.webp"
+          alt="avatar"
+          width={36}
+          height={36}
+        />
+      </div>
 
-      <div className="bg-[#2A2A2E] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] w-fit">
+      <div className="bg-[#2A2A2E] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] inline-block break-words">
         {message.message}
       </div>
     </div>

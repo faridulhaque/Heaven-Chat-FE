@@ -66,20 +66,20 @@ function ChatBoxAi() {
         {messages.map((m, i) =>
           m.role === "user" ? (
             <div key={i} className="w-full flex justify-end px-1">
-              <div className="bg-[#8E2929] text-white px-4 py-2 rounded-lg rounded-br-none max-w-[75%] w-fit">
+              <div className="bg-[#8E2929] text-white px-4 py-2 rounded-lg rounded-br-none max-w-[75%] break-words">
                 {m.content}
               </div>
             </div>
           ) : (
-            <div key={i} className="w-full flex justify-start px-1">
+            <div key={i} className="w-full flex items-start px-1">
               <Image
-                className="rounded-full mr-3"
+                className="rounded-full mr-3 flex-shrink-0"
                 src="/assets/h-ai.webp"
                 alt="avatar ai"
                 width={30}
                 height={30}
               />
-              <div className="bg-[#2A2B31] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] w-fit">
+              <div className="bg-[#2A2B31] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] break-words">
                 {m.content}
               </div>
             </div>
