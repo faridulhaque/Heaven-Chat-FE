@@ -3,27 +3,26 @@ import React from "react";
 
 function Feature() {
   return (
-    <div id="features" className="py-14 mx-auto w-11/12">
-      <h2 className="text-center text-3xl md:text-4xl text-white py-3">
+    <div id="features" className="py-20 mx-auto w-11/12">
+      <h2 className="text-center text-3xl md:text-4xl text-[#E5E5E5] font-semibold mb-4">
         Features for you
       </h2>
 
-      <p className="text-center text-white text-base opacity-80 pb-16 max-w-xl mx-auto">
+      <p className="text-center text-[#E5E5E5] text-base opacity-80 pb-16 max-w-xl mx-auto">
         Discover the simple joys that make chatting feel natural and secure.
       </p>
 
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
-        {/* Feature Card */}
-        <div className="w-full h-64 rounded-md relative">
-          <div className="absolute h-1/4 w-full border border-[#FF4F4F]/50 border-b-0 rounded-t-md"></div>
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20">
+        <div className="w-full h-64 rounded-xl relative">
+          <div className="absolute h-1/4 w-full border border-[#FF4F4F]/40 border-b-0 rounded-t-xl"></div>
 
-          <div className="absolute inset-0 z-10 flex flex-col px-6 py-6">
+          <div className="absolute inset-0 z-10 flex flex-col px-8 py-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              stroke="white"
+              stroke="#FF4F4F"
               className="w-10 h-10 mb-4"
             >
               <path
@@ -33,25 +32,26 @@ function Feature() {
               />
             </svg>
 
-            <h2 className="text-white text-xl mb-2">Chat Safely</h2>
-            <p className="text-white text-sm opacity-80">
+            <h2 className="text-[#E5E5E5] text-xl font-medium mb-2">
+              Chat Safely
+            </h2>
+            <p className="text-[#E5E5E5] text-sm opacity-70 leading-relaxed">
               Connect through text without sharing your name — just your
               thoughts.
             </p>
           </div>
         </div>
 
-        {/* Feature Card */}
-        <div className="w-full h-64 rounded-md relative">
-          <div className="absolute h-1/4 w-full border border-[#FF4F4F]/50 border-b-0 rounded-t-md"></div>
+        <div className="w-full h-64 rounded-xl relative">
+          <div className="absolute h-1/4 w-full border border-[#FF4F4F]/40 border-b-0 rounded-t-xl"></div>
 
-          <div className="absolute inset-0 z-10 flex flex-col px-6 py-6">
+          <div className="absolute inset-0 z-10 flex flex-col px-8 py-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              stroke="white"
+              stroke="#FF4F4F"
               className="w-10 h-10 mb-4"
             >
               <path
@@ -61,8 +61,10 @@ function Feature() {
               />
             </svg>
 
-            <h2 className="text-white text-xl mb-2">Talk Freely</h2>
-            <p className="text-white text-sm opacity-80">
+            <h2 className="text-[#E5E5E5] text-xl font-medium mb-2">
+              Talk Freely
+            </h2>
+            <p className="text-[#E5E5E5] text-sm opacity-70 leading-relaxed">
               Talk in real time with complete privacy — no identity, no
               judgment.
             </p>

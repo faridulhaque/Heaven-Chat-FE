@@ -16,41 +16,41 @@ export default function Navbar({ handleGoogleSignIn }: NavbarComponent) {
   const { loggedInUser, setLoggedInUser } = value;
 
   return (
-    <div className="w-11/12 h-20 text-white flex items-center justify-between mx-auto font-inter relative">
-      <div className="w-3/12 h-full flex items-center">
+    <div className="w-11/12 h-20 mx-auto flex items-center justify-between bg-[#0F0F0F] text-[#E5E5E5]">
+      <div className="w-3/12 flex items-center">
         <Image width={200} height={50} alt="logo" src="/assets/logo.webp" />
       </div>
 
-      <div className="w-6/12 hidden lg:flex h-full">
-        <ul className="h-full flex items-center justify-around w-full">
+      <div className="w-6/12 hidden lg:flex">
+        <ul className="flex items-center justify-around w-full text-sm font-medium">
           <li>
-            <Link href="/" className="hover:text-[#FF5F5F]">
+            <Link href="/" className="hover:text-[#FF4F4F]">
               Home
             </Link>
           </li>
           <li>
-            <Link href="#features" className="hover:text-[#FF5F5F]">
+            <Link href="#features" className="hover:text-[#FF4F4F]">
               Features
             </Link>
           </li>
           <li>
-            <Link href="#resources" className="hover:text-[#FF5F5F]">
+            <Link href="#resources" className="hover:text-[#FF4F4F]">
               Resources
             </Link>
           </li>
           <li>
-            <Link href="#about" className="hover:text-[#FF5F5F]">
+            <Link href="#about" className="hover:text-[#FF4F4F]">
               About us
             </Link>
           </li>
         </ul>
       </div>
 
-      <div className="lg:w-3/12 w-auto flex items-center justify-end h-full">
+      <div className="lg:w-3/12 flex justify-end">
         {!loggedInUser ? (
           <button
             onClick={handleGoogleSignIn}
-            className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"
+            className="bg-[#FF4F4F] cursor-pointer rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"
           >
             <Image
               src="/assets/google-icon.webp"
@@ -68,7 +68,7 @@ export default function Navbar({ handleGoogleSignIn }: NavbarComponent) {
               handleSignOut();
               setLoggedInUser(null);
             }}
-            className="cursor-pointer bg-[#FF4F4F] rounded-lg text-white py-2 px-4 flex items-center gap-2 text-sm"
+            className="bg-[#FF4F4F] cursor-pointer rounded-lg text-white py-2 px-4 text-sm"
           >
             Sign Out
           </button>

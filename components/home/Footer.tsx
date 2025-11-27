@@ -28,21 +28,21 @@ function Footer({ handleGoogleSignIn }: FooterComponent) {
       </div>
 
       <div className="w-full sm:w-3/5 flex flex-wrap items-center justify-center gap-4 mt-8 text-xs sm:text-sm">
-        <span className="text-white opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
+        <span className="text-[#E5E5E5] opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
           Twitter
         </span>
-        <span className="text-white opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
+        <span className="text-[#E5E5E5] opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
           Facebook
         </span>
-        <span className="text-white opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
+        <span className="text-[#E5E5E5] opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
           Instagram
         </span>
-        <span className="text-white opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
+        <span className="text-[#E5E5E5] opacity-80 hover:text-[#FF5F5F] transition-colors duration-200">
           Github
         </span>
       </div>
 
-      <h2 className="text-white text-2xl sm:text-4xl text-center mt-8 px-4">
+      <h2 className="text-[#E5E5E5] text-2xl sm:text-4xl text-center mt-8 px-4">
         Ready to enter a different world? Let's start!
       </h2>
 
@@ -73,12 +73,13 @@ function Footer({ handleGoogleSignIn }: FooterComponent) {
       </div>
 
       <div className="w-11/12 border-[#FF5F5F] border-t opacity-40 flex flex-col sm:flex-row justify-between items-center mt-10 pt-4">
-        <h2 className="text-xs text-white opacity-75">
+        <h2 className="text-xs text-[#E5E5E5] opacity-75">
           2025 HeavenChat. All Rights Reserved.
         </h2>
-        <h2 className="text-xs text-white opacity-75 mt-2 sm:mt-0">
-          <span className="mr-4 sm:mr-10">Privacy Policy</span>
-          <span>Terms & Condition</span>
+
+        <h2 className="text-xs text-[#E5E5E5] opacity-75 mt-2 sm:mt-0">
+          <span className="mr-4 sm:mr-10 cursor-pointer">Privacy Policy</span>
+          <span className="cursor-pointer">Terms & Condition</span>
         </h2>
       </div>
     </div>
