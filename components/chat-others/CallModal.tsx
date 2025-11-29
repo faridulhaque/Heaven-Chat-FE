@@ -189,7 +189,6 @@ function CallModal({
 
     cleanupCall();
 
-    // Reset modal state so UI works on second open
     resetModal();
   };
 
@@ -199,6 +198,7 @@ function CallModal({
     <>
       <audio ref={ringToneRef} src="/sounds/ringtone.mp3" preload="auto" loop />
       <audio ref={dialToneRef} src="/sounds/dialtone.mp3" preload="auto" loop />
+
       {callerId && !incomingSignal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-black text-white border border-red-400/20 rounded-lg p-8 w-[380px]">
@@ -235,6 +235,18 @@ function CallModal({
                 </button>
               </div>
             )}
+
+            {callState === "inCall" && (
+              <div className="text-center space-y-4">
+                <p>In call with {calleeName}</p>
+                <button
+                  className="bg-red-600 py-2 w-full rounded cursor-pointer"
+                  onClick={endCall}
+                >
+                  Hang Up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -245,19 +257,29 @@ function CallModal({
             {callState === "receiving" && (
               <div className="text-center space-y-4">
                 <p>{incomingSignal?.callerName} is calling you</p>
-
                 <button
                   className="bg-green-600 py-2 w-full rounded cursor-pointer"
                   onClick={answerCall}
                 >
                   Accept
                 </button>
-
                 <button
                   className="bg-red-600 py-2 w-full rounded cursor-pointer"
                   onClick={endCall}
                 >
                   Decline
+                </button>
+              </div>
+            )}
+
+            {callState === "inCall" && (
+              <div className="text-center space-y-4">
+                <p>In call…</p>
+                <button
+                  className="bg-red-600 py-2 w-full rounded cursor-pointer"
+                  onClick={endCall}
+                >
+                  Hang Up
                 </button>
               </div>
             )}
