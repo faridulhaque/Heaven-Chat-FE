@@ -27,13 +27,10 @@ export default function Notification({
 
   const isBlocked = blockCheck?.data;
 
-
-  
-
   return (
     <>
       {!isBlocked && (
-        <div className="w-full h-16 flex items-center justify-between px-3 z-10 bg-[#2A2B32] border-[#FF4F4F]/80">
+        <div className="w-full h-16 flex items-center justify-between px-3 z-10 bg-[#2A2B32] border-[#FF4F4F]/80 mb-3">
           <div className="flex items-center gap-3 overflow-hidden">
             <Image
               className="rounded-full"
