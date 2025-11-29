@@ -16,6 +16,7 @@ export default function OnboardingModal({
   setNewUser,
 }: OnboardingModalType) {
   const router = useRouter();
+  const [userName, setUserName] = useState("");
   const [avatar, setAvatar] = useState("");
   const [register, { isLoading: registering }] = useRegisterMutation();
 
@@ -46,9 +47,11 @@ export default function OnboardingModal({
 
   const handleOnboard = async () => {
     const payload = {
-      ...newUser,
+      email: newUser?.email,
+      name: userName,
       avatar,
     };
+    console.log("payload", payload);
 
     for (const key in payload) {
       if (!payload[key as keyof typeof payload]) {
@@ -92,15 +95,15 @@ export default function OnboardingModal({
 
             <div className="flex justify-center mt-5">
               <input
+                onChange={(e) => setUserName(e.target.value)}
                 className="w-full sm:w-3/5 h-12 outline-none text-white px-3 bg-[#202020] opacity-80 rounded-md"
-                placeholder="Name"
+                placeholder="Nickname"
                 type="text"
-                defaultValue={newUser?.name}
               />
             </div>
 
             <h2 className="text-center text-sm opacity-80 mt-5">
-              Choose your avatar
+              Choose your avatar <span className="text-red-500">*</span>
             </h2>
 
             <div className="w-full sm:w-3/5 mx-auto flex flex-wrap gap-6 justify-center mt-5">

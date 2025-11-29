@@ -273,7 +273,11 @@ export default function ChatBox({
             m.from === loggedInUser?.userId ? (
               <SentMessage key={i} message={m} />
             ) : (
-              <ReceivedMessage key={i} message={m} />
+              <ReceivedMessage
+                avatar={loadedConversation?.counterParty?.avatar}
+                key={i}
+                message={m}
+              />
             )
           )}
           <div ref={bottomRef} />

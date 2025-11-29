@@ -4,15 +4,19 @@ import { TMessageDataFE } from "@/services/types";
 
 type ReceivedMessageComponent = {
   message: TMessageDataFE;
+  avatar: string;
 };
 
-export default function ReceivedMessage({ message }: ReceivedMessageComponent) {
+export default function ReceivedMessage({
+  message,
+  avatar,
+}: ReceivedMessageComponent) {
   return (
     <div className="w-full flex items-start my-4">
       <div className="mr-3 shrink-0">
         <Image
           className="rounded-full"
-          src="/assets/avatar-1.webp"
+          src={avatar || "/assets/avatar-1.webp"}
           alt="avatar"
           width={36}
           height={36}
