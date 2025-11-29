@@ -1,4 +1,3 @@
-
 import ChatViewCommon from "@/components/others/ChatViewCommon";
 import RequireUser from "@/components/others/RequireUser";
 
@@ -7,6 +6,7 @@ function Page() {
     <RequireUser>
       <ChatViewCommon></ChatViewCommon>
     </RequireUser>
+    // <ChatViewCommon></ChatViewCommon>
   );
 }
 

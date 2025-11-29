@@ -22,6 +22,7 @@ import BottomBar from "../chat-others/BottomBar";
 import { handleSignOut } from "@/services/firebase.config";
 import AIChatItem from "../chat-others/AIChatItem";
 import ChatBoxAi from "../chat-lg/ChatBoxAi";
+import DummyL from "../others/DummyL";
 
 type ChatViewSmComponent = {
   onboardedUser: UserPayload | null;
@@ -52,6 +53,23 @@ export default function ChatViewSm({
   chatOpen,
   setChatOpen,
 }: ChatViewSmComponent) {
+  useEffect(() => {
+    const updateHeight = () => {
+      const vh = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty("--app-height", `${vh}px`);
+    };
+
+    updateHeight();
+
+    window.visualViewport?.addEventListener("resize", updateHeight);
+    window.visualViewport?.addEventListener("scroll", updateHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateHeight);
+      window.visualViewport?.removeEventListener("scroll", updateHeight);
+    };
+  }, []);
+
   const [searchParam, setSearchParam] = useState("");
   const [searchedData, setSearchedData] = useState<Chat[] | []>([]);
 
@@ -93,9 +111,9 @@ export default function ChatViewSm({
   if (chatLoading | usersLoading) return <Loading></Loading>;
 
   return (
-    <div className="block md:hidden text-white h-screen">
+    <div className="block md:hidden text-white h-(--app-height)">
       {!chatOpen && (
-        <div className="w-full h-full bg-[#1E1F24] overflow-y-auto">
+        <div className="w-full  bg-[#1E1F24] flex flex-col overflow-hidden">
           <div className="sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 pt-5 pb-4 px-3 flex items-center gap-3">
             {isChatList ? (
               <input
@@ -121,64 +139,62 @@ export default function ChatViewSm({
             </div>
           </div>
 
-          {isChatList ? (
-            <div className="mt-2">
-              {!searchParam && (
-                <AIChatItem
-                  setChatOpen={setChatOpen}
-                  isAi={isAi}
-                  setAi={setAi}
-                  setConversationId={setConversationId}
-                />
-              )}
-
-              {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
-                <ChatListItem
-                  setChatOpen={setChatOpen}
-                  lastMessageData={
-                    lastMessages.get(conversationId) as LastMessageValue
-                  }
-                  socketRef={socketRef}
-                  selected={c.conversationId === conversationId}
-                  setConversationId={setConversationId}
-                  setAi={setAi}
-                  conversation={c}
-                  key={c.conversationId}
-                />
-              ))}
-            </div>
-          ) : (
-            <div>
-              {usersData &&
-                usersData?.data?.length &&
-                usersData?.data?.map((u: UserPayload) => (
-                  <Notification
+          <div className="flex-1 overflow-y-auto mt-2 min-h-0">
+            {isChatList ? (
+              <div>
+                {!searchParam && (
+                  <AIChatItem
                     setChatOpen={setChatOpen}
-                    setIsAi={setAi}
-                    key={u.email}
-                    user={u}
-                    handleStartChat={handleStartChat}
+                    isAi={isAi}
+                    setAi={setAi}
+                    setConversationId={setConversationId}
+                  />
+                )}
+
+                {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
+                  <ChatListItem
+                    setChatOpen={setChatOpen}
+                    lastMessageData={
+                      lastMessages.get(conversationId) as LastMessageValue
+                    }
+                    socketRef={socketRef}
+                    selected={c.conversationId === conversationId}
+                    setConversationId={setConversationId}
+                    setAi={setAi}
+                    conversation={c}
+                    key={c.conversationId}
                   />
                 ))}
-            </div>
-          )}
+              </div>
+            ) : (
+              <div>
+                {usersData &&
+                  usersData?.data?.length &&
+                  usersData?.data?.map((u: UserPayload) => (
+                    <Notification
+                      setChatOpen={setChatOpen}
+                      setIsAi={setAi}
+                      key={u.email}
+                      user={u}
+                      handleStartChat={handleStartChat}
+                    />
+                  ))}
+              </div>
+            )}
+          </div>
 
-          <BottomBar handleSignOut={handleSignOut} setChatList={setChatList} />
+          <div className="h-14 w-full fixed bottom-0 left-0 bg-[#2A2B32] border-t border-[#FF4F4F]/80 flex items-center justify-around px-6 z-30">
+            <BottomBar
+              handleSignOut={handleSignOut}
+              setChatList={setChatList}
+            />
+          </div>
         </div>
       )}
 
       {chatOpen && (
-        <div className="w-full h-full bg-[#1E1F24] overflow-y-auto">
-          <div className="sticky top-0 left-0 right-0 bg-[#1E1F24] z-20 px-3 py-3 flex items-center">
-            <button
-              onClick={() => setChatOpen(false)}
-              className="px-4 py-2 bg-[#292933] rounded-3xl text-white cursor-pointer"
-            >
-              Back
-            </button>
-          </div>
-
-          <div className="h-11/12">
+        <div className="w-full bg-[#1E1F24] flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {isAi ? (
               <ChatBoxAi />
             ) : (

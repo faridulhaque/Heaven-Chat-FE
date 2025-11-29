@@ -49,7 +49,18 @@ function ChatBoxAi() {
   };
 
   return (
-    <div className="mx-auto w-full h-full flex flex-col bg-[#1D1E22]">
+    <div
+      className="mx-auto w-full flex flex-col bg-[#1D1E22] overflow-hidden"
+      style={{ height: "100dvh" }}
+    >
+      <div className="md:hidden sticky top-0 left-0 right-0 z-30 bg-[#1E1F24] h-9 flex items-center px-2">
+        <button
+          onClick={() => window.location.reload()}
+          className="text-white text-xs px-3 py-1 bg-[#292933] rounded-full cursor-pointer"
+        >
+          Back
+        </button>
+      </div>
       <div className="flex items-center h-16 px-3 bg-[#1F2025] border-b-2 border-[#3A3B42] shadow-md shadow-black/20 text-white">
         <Image
           className="rounded-full"
@@ -58,28 +69,27 @@ function ChatBoxAi() {
           width={36}
           height={36}
         />
-
         <h2 className="text-sm font-medium truncate ml-4">Heaven AI</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
         {messages.map((m, i) =>
           m.role === "user" ? (
             <div key={i} className="w-full flex justify-end px-1">
-              <div className="bg-[#8E2929] text-white px-4 py-2 rounded-lg rounded-br-none max-w-[75%] break-words">
+              <div className="bg-[#8E2929] text-white px-4 py-2 rounded-lg rounded-br-none max-w-[75%] wrap-break-word">
                 {m.content}
               </div>
             </div>
           ) : (
             <div key={i} className="w-full flex items-start px-1">
               <Image
-                className="rounded-full mr-3 flex-shrink-0"
+                className="rounded-full mr-3 shrink-0"
                 src="/assets/h-ai.webp"
                 alt="avatar ai"
                 width={30}
                 height={30}
               />
-              <div className="bg-[#2A2B31] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] break-words">
+              <div className="bg-[#2A2B31] text-white px-4 py-2 rounded-lg rounded-bl-none max-w-[75%] wrap-break-word">
                 {m.content}
               </div>
             </div>

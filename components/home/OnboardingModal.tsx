@@ -77,58 +77,56 @@ export default function OnboardingModal({
   return (
     <>
       {newUser && (
-        <div
-          className="w-full min-h-screen bg-black/60 fixed z-10 top-0 left-0
-"
-        >
+        <div className="w-full h-full fixed top-0 left-0 bg-black/60 z-10 flex items-center justify-center px-4">
           <div
             ref={modalRef}
-            className={` text-white   bg-black rounded-lg absolute z-11 top-0 bottom-0 right-0 left-0 m-auto w-2/4 h-fit pt-10 pb-20 border border-red-400/50`}
+            className="w-full max-w-md bg-black border border-red-400/50 text-white rounded-lg pt-10 pb-16 px-6"
           >
-            <div className="w-full h-full">
-              <h2 className="text-white text-center text-4xl">
-                Login to Continue
-              </h2>
-              <h2 className="text-white text-center text-sm opacity-80 mt-5">
-                Choose your identity and start your session
-              </h2>
-              <div className="w-full h-auto flex items-center justify-center">
-                <input
-                  className="w-3/5 h-12 outline-0 border-0 text-white py-3 px-2 opacity-80 bg-[#202020] mx-auto mt-5"
-                  placeholder="Name"
-                  type="text"
-                  defaultValue={newUser?.name}
-                />
-              </div>
-              <h2 className="text-white text-center text-sm opacity-80 mt-5">
-                Choose your avatar
-              </h2>
-              <div className="w-2/5 h-20 mx-auto flex items-center justify-around mt-5">
-                {avatars.map((avt: string) => (
-                  <div
-                    onClick={() => setAvatar(avt)}
-                    key={avt}
-                    className="flex items-center flex-col cursor-pointer"
-                  >
-                    <Image src={avt} alt="google" width={60} height={60} />
+            <h2 className="text-center text-3xl sm:text-4xl">
+              Login to Continue
+            </h2>
 
-                    <span
-                      className={`w-3 h-3 mt-3 rounded-full border-white border ${
-                        avt === avatar ? "bg-white" : ""
-                      }`}
-                    ></span>
-                  </div>
-                ))}
-              </div>
+            <h2 className="text-center text-sm opacity-80 mt-4">
+              Choose your identity and start your session
+            </h2>
 
-              <div className="flex items-center justify-center mt-10">
-                <button
-                  onClick={handleOnboard}
-                  className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-2 px-10"
+            <div className="flex justify-center mt-5">
+              <input
+                className="w-full sm:w-3/5 h-12 outline-none text-white px-3 bg-[#202020] opacity-80 rounded-md"
+                placeholder="Name"
+                type="text"
+                defaultValue={newUser?.name}
+              />
+            </div>
+
+            <h2 className="text-center text-sm opacity-80 mt-5">
+              Choose your avatar
+            </h2>
+
+            <div className="w-full sm:w-3/5 mx-auto flex flex-wrap gap-6 justify-center mt-5">
+              {avatars.map((avt: string) => (
+                <div
+                  key={avt}
+                  onClick={() => setAvatar(avt)}
+                  className="flex flex-col items-center cursor-pointer"
                 >
-                  Continue
-                </button>
-              </div>
+                  <Image src={avt} alt="avatar" width={60} height={60} />
+                  <span
+                    className={`w-3 h-3 mt-3 rounded-full border border-white ${
+                      avt === avatar ? "bg-white" : ""
+                    }`}
+                  ></span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-10">
+              <button
+                onClick={handleOnboard}
+                className="cursor-pointer bg-[#FF4F4F] rounded-4xl text-white py-2 px-10"
+              >
+                Continue
+              </button>
             </div>
           </div>
         </div>

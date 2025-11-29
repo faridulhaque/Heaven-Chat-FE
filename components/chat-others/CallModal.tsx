@@ -53,7 +53,7 @@ function CallModal({
   resetModal,
   localStreamRef,
   remoteAudioRef,
-  dialToneRef
+  dialToneRef,
 }: CallModalProps) {
   const { loggedInUser } = useContext(Context);
 
@@ -206,13 +206,13 @@ function CallModal({
               <div className="text-center space-y-4">
                 <p>Ready to call {calleeName}?</p>
                 <button
-                  className="bg-green-600 py-2 w-full rounded"
+                  className="bg-green-600 py-2 w-full rounded cursor-pointer"
                   onClick={startCall}
                 >
                   Call
                 </button>
                 <button
-                  className="bg-red-600 py-2 w-full rounded"
+                  className="bg-red-600 py-2 w-full rounded cursor-pointer"
                   onClick={() => {
                     resetModal();
                     setCallerId("");
@@ -228,7 +228,7 @@ function CallModal({
               <div className="text-center space-y-4">
                 <p>Calling {calleeName}...</p>
                 <button
-                  className="bg-red-600 py-2 w-full rounded"
+                  className="bg-red-600 py-2 w-full rounded cursor-pointer"
                   onClick={endCall}
                 >
                   End Call
@@ -247,14 +247,14 @@ function CallModal({
                 <p>{incomingSignal?.callerName} is calling you</p>
 
                 <button
-                  className="bg-green-600 py-2 w-full rounded"
+                  className="bg-green-600 py-2 w-full rounded cursor-pointer"
                   onClick={answerCall}
                 >
                   Accept
                 </button>
 
                 <button
-                  className="bg-red-600 py-2 w-full rounded"
+                  className="bg-red-600 py-2 w-full rounded cursor-pointer"
                   onClick={endCall}
                 >
                   Decline
