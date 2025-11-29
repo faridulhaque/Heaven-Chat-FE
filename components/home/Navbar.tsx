@@ -16,7 +16,7 @@ export default function Navbar({ handleGoogleSignIn }: NavbarComponent) {
   const { loggedInUser, setLoggedInUser } = value;
 
   return (
-    <div className="w-11/12 h-20 mx-auto flex items-center justify-between bg-[#0F0F0F] text-[#E5E5E5]">
+    <div className="w-11/12 h-20 mx-auto flex items-center justify-between text-[#E5E5E5]">
       <div className="w-3/12 flex items-center">
         <Image width={200} height={50} alt="logo" src="/assets/logo.webp" />
       </div>
