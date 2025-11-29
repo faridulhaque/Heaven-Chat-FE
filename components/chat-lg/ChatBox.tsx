@@ -88,12 +88,15 @@ export default function ChatBox({
 
     const onPrivateMessage = (data: TMessageDataFE) => {
       setMessages((prev) => [...prev, data]);
-      setLastMessages(
-        new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
-          message: data.message,
-          time: data.time,
-        })
-      );
+      setTimeout(() => {
+        refetchChatList();
+      }, 1000);
+      // setLastMessages(
+      //   new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
+      //     message: data.message,
+      //     time: data.time,
+      //   })
+      // );
     };
     s.on("private-message", onPrivateMessage);
 
@@ -164,6 +167,9 @@ export default function ChatBox({
       recipientId: msg.to,
     });
     setMessages((prev) => [...prev, msg]);
+    setTimeout(() => {
+      refetchChatList();
+    }, 1000);
   }, [sayHi, loadedConversation?.counterParty, conversationId]);
 
   const sendMessage = () => {
@@ -186,9 +192,9 @@ export default function ChatBox({
     );
 
     socketRef.current?.emit("private-message", { to: msg.to, message: msg });
-    socketRef.current?.emit("new-chat", {
-      recipientId: msg.to,
-    });
+    // socketRef.current?.emit("new-chat", {
+    //   recipientId: msg.to,
+    // });
     setMessages((prev) => [...prev, msg]);
 
     setMessageBody({
@@ -201,6 +207,7 @@ export default function ChatBox({
     });
     setTimeout(() => {
       refetchChatList();
+      
     }, 1000);
   };
 

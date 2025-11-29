@@ -37,6 +37,11 @@ type ChatViewSmComponent = {
   setCalleeName: (v: string) => void;
   setChatOpen: (v: boolean) => void;
   chatOpen: boolean;
+  chatLoading: boolean;
+  refetchChatList: () => void;
+  chatList: Chat[];
+  setSayHi: (v: string) => void;
+  sayHi: string;
 };
 
 export default function ChatViewSm({
@@ -52,6 +57,11 @@ export default function ChatViewSm({
   setCalleeName,
   chatOpen,
   setChatOpen,
+  chatList,
+  chatLoading,
+  refetchChatList,
+  sayHi,
+  setSayHi,
 }: ChatViewSmComponent) {
   useEffect(() => {
     const updateHeight = () => {
@@ -85,10 +95,6 @@ export default function ChatViewSm({
 
   const [startChat, { isLoading: starting }] = useStartChatMutation();
 
-  const { data: chatData, isLoading: chatLoading } =
-    useGetChatListQuery<any>("");
-  const chatList: Chat[] = chatData?.data;
-
   useEffect(() => {
     const filtered =
       chatList?.filter((c) =>
@@ -107,8 +113,6 @@ export default function ChatViewSm({
     setOnboardedUser(null);
     setChatList(true);
   };
-
-  if (chatLoading | usersLoading) return <Loading></Loading>;
 
   return (
     <div className="block md:hidden text-white h-(--app-height)">
@@ -195,10 +199,13 @@ export default function ChatViewSm({
       {chatOpen && (
         <div className="w-full bg-[#1E1F24] flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto min-h-0">
-            {/* {isAi ? (
+            {isAi ? (
               <ChatBoxAi />
             ) : (
               <ChatBox
+                refetchChatList={refetchChatList}
+                sayHi={sayHi}
+                setSayHi={setSayHi}
                 setCalleeName={setCalleeName}
                 setCalleeId={setCalleeId}
                 setCallerId={setCallerId}
@@ -208,7 +215,7 @@ export default function ChatViewSm({
                 setLastMessages={setLastMessages}
                 lastMessages={lastMessages}
               />
-            )} */}
+            )}
           </div>
         </div>
       )}

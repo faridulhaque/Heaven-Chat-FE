@@ -85,7 +85,9 @@ export default function ChatViewCommon() {
 
     const onNewChat = () => {
       console.log("new chat arrived");
-      refetchChatList();
+      setTimeout(() => {
+        refetchChatList();
+      }, 1000);
     };
     socketRef.current.on("new-chat", onNewChat);
 
@@ -206,6 +208,11 @@ export default function ChatViewCommon() {
         socketRef={socketRef}
       />
       <ChatViewSm
+        sayHi={sayHi}
+        setSayHi={setSayHi}
+        chatList={chatList}
+        chatLoading={chatLoading}
+        refetchChatList={refetchChatList}
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
         setCalleeName={setCalleeName}
