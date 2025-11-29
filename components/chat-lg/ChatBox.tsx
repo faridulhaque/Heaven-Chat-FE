@@ -20,6 +20,7 @@ import {
 import Loading from "../others/Loading";
 import { Socket } from "socket.io-client";
 import CallModal from "../chat-others/CallModal";
+import DummyL from "../others/DummyL";
 
 type ChatBoxComponent = {
   conversationId: string;
@@ -179,8 +180,20 @@ export default function ChatBox({
 
   return (
     <>
-      <div className="flex flex-col w-full h-full bg-[#1D1E22]">
-        <div className="flex items-center h-16 px-3 bg-[#1F2025] border-b-2 border-[#3A3B42] shadow-md shadow-black/20">
+      <div
+        className="flex flex-col w-full bg-[#1D1E22] overflow-hidden"
+        style={{ height: "100dvh" }}
+      >
+        <div className="md:hidden sticky top-0 left-0 right-0 z-30 bg-[#1E1F24] h-9 flex items-center px-2">
+          <button
+            onClick={() => window.location.reload()}
+            className="text-white text-xs px-3 py-1 bg-[#292933] rounded-full cursor-pointer"
+          >
+            Back
+          </button>
+        </div>
+
+        <div className="flex items-center h-16 px-3 bg-[#1F2025] border-b-2 border-[#3A3B42] shadow-md shadow-black/20 text-white">
           <Image
             className="rounded-full"
             src={
@@ -255,12 +268,16 @@ export default function ChatBox({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3 min-h-0 pb-20">
           {messages.map((m: TMessageDataFE, i: number) =>
             m.from === loggedInUser?.userId ? (
               <SentMessage key={i} message={m} />
             ) : (
-              <ReceivedMessage key={i} message={m} />
+              <ReceivedMessage
+                avatar={loadedConversation?.counterParty?.avatar}
+                key={i}
+                message={m}
+              />
             )
           )}
           <div ref={bottomRef} />
@@ -286,7 +303,7 @@ export default function ChatBox({
             </h3>
           </div>
         ) : (
-          <div className="h-16 flex items-center px-3 bg-[#1F2025] border-t border-[#2C2D33]">
+          <div className="h-16 w-full shrink-0 flex items-center px-3 bg-[#1F2025] border-t border-[#2C2D33]">
             <input
               onChange={(e) =>
                 setMessageBody({
