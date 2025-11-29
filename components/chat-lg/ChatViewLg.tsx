@@ -38,6 +38,11 @@ type ChatViewLgComponent = {
   setCalleeName: (v: string) => void;
   setChatOpen: (v: boolean) => void;
   chatOpen: boolean;
+  chatLoading: boolean;
+  refetchChatList: () => void;
+  chatList: Chat[];
+  setSayHi: (v: string) => void;
+  sayHi: string;
 };
 
 export default function ChatViewLg({
@@ -53,6 +58,11 @@ export default function ChatViewLg({
   setCalleeName,
   setChatOpen,
   chatOpen,
+  chatList,
+  chatLoading,
+  refetchChatList,
+  sayHi,
+  setSayHi,
 }: ChatViewLgComponent) {
   const [searchParam, setSearchParam] = useState("");
   const [searchedData, setSearchedData] = useState<Chat[] | []>([]);
@@ -69,10 +79,6 @@ export default function ChatViewLg({
 
   const [startChat, { isLoading: starting }] = useStartChatMutation();
 
-  const { data: chatData, isLoading: chatLoading } =
-    useGetChatListQuery<any>("");
-  const chatList: Chat[] = chatData?.data;
-
   useEffect(() => {
     const filtered =
       chatList?.filter((c) =>
@@ -86,16 +92,19 @@ export default function ChatViewLg({
     const res: any = await startChat({
       members: [recipientId, value.loggedInUser?.userId],
     });
+    // socketRef.current?.emit("new-chat", {
+    //   recipientId,
+    // });
+
     setRecipientId(recipientId);
     setConversationId(res?.data?.data?.conversationId);
     setOnboardedUser(null);
     setChatList(true);
+    setSayHi("Hi");
   };
 
-  if (chatLoading | usersLoading) return <Loading></Loading>;
-  console.log("search param", searchParam);
-  console.log("searched data", searchedData);
-  console.log("chat list", chatList);
+  if (usersLoading) return <Loading></Loading>;
+
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">
@@ -126,30 +135,36 @@ export default function ChatViewLg({
           </div>
 
           {isChatList ? (
-            <div className="mt-2">
-              {!searchParam && (
-                <AIChatItem
-                  setChatOpen={setChatOpen}
-                  isAi={isAi}
-                  setAi={setAi}
-                  setConversationId={setConversationId}
-                />
-              )}
+            <>
+              {chatLoading ? (
+                <Loading></Loading>
+              ) : (
+                <div className="mt-2">
+                  {!searchParam && (
+                    <AIChatItem
+                      setChatOpen={setChatOpen}
+                      isAi={isAi}
+                      setAi={setAi}
+                      setConversationId={setConversationId}
+                    />
+                  )}
 
-              {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
-                <ChatListItem
-                  lastMessageData={
-                    lastMessages.get(conversationId) as LastMessageValue
-                  }
-                  socketRef={socketRef}
-                  selected={c.conversationId === conversationId}
-                  setConversationId={setConversationId}
-                  setAi={setAi}
-                  conversation={c}
-                  key={c.conversationId}
-                />
-              ))}
-            </div>
+                  {(searchParam ? searchedData : chatList)?.map((c: Chat) => (
+                    <ChatListItem
+                      lastMessageData={
+                        lastMessages.get(conversationId) as LastMessageValue
+                      }
+                      socketRef={socketRef}
+                      selected={c.conversationId === conversationId}
+                      setConversationId={setConversationId}
+                      setAi={setAi}
+                      conversation={c}
+                      key={c.conversationId}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
             <div>
               {usersData &&
@@ -173,6 +188,9 @@ export default function ChatViewLg({
             <ChatBoxAi />
           ) : (
             <ChatBox
+              refetchChatList={refetchChatList}
+              sayHi={sayHi}
+              setSayHi={setSayHi}
               setCalleeName={setCalleeName}
               setCalleeId={setCalleeId}
               setCallerId={setCallerId}

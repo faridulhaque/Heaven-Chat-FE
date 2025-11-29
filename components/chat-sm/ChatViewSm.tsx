@@ -195,7 +195,7 @@ export default function ChatViewSm({
       {chatOpen && (
         <div className="w-full bg-[#1E1F24] flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto min-h-0">
-            {isAi ? (
+            {/* {isAi ? (
               <ChatBoxAi />
             ) : (
               <ChatBox
@@ -208,7 +208,7 @@ export default function ChatViewSm({
                 setLastMessages={setLastMessages}
                 lastMessages={lastMessages}
               />
-            )}
+            )} */}
           </div>
         </div>
       )}

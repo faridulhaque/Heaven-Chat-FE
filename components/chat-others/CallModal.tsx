@@ -192,7 +192,6 @@ function CallModal({
     resetModal();
   };
 
-  console.log("incoming signal", incomingSignal);
 
   return (
     <>

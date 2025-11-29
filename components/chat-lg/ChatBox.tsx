@@ -31,6 +31,9 @@ type ChatBoxComponent = {
   setCallerId: (v: string) => void;
   setCalleeId: (v: string) => void;
   setCalleeName: (v: string) => void;
+  setSayHi: (v: string) => void;
+  sayHi: string;
+  refetchChatList: () => void;
 };
 
 export default function ChatBox({
@@ -42,6 +45,9 @@ export default function ChatBox({
   setCalleeId,
   setCallerId,
   setCalleeName,
+  setSayHi,
+  sayHi,
+  refetchChatList,
 }: ChatBoxComponent) {
   const value = useContext(Context);
   const { loggedInUser } = value;
@@ -62,8 +68,10 @@ export default function ChatBox({
   const [block, { isLoading: blocking }] = useBlockUserMutation();
   const [deleteChat, { isLoading: deleting }] = useDeleteChatMutation();
 
-  const { data, isLoading: conversationLoading } =
-    useGetOneChatQuery<any>(conversationId);
+  const { data, isLoading: conversationLoading } = useGetOneChatQuery<any>(
+    conversationId,
+    { skip: !conversationId }
+  );
   const loadedConversation: Chat = data?.data;
 
   const { data: blockCheck, isLoading: checkingBlock } =
@@ -131,6 +139,33 @@ export default function ChatBox({
     if (found) setIsBlocker(true);
   }, [loggedInUser?.blocked, loadedConversation?.counterParty?.userId]);
 
+  useEffect(() => {
+    if (!loadedConversation?.counterParty) return;
+    if (!sayHi) return;
+
+    const msg: TMessageDataFE = {
+      message: sayHi,
+      from: loggedInUser?.userId || "",
+      to: loadedConversation.counterParty.userId,
+      type: "text",
+      conversationId,
+      time: new Date().toISOString(),
+    };
+
+    setLastMessages(
+      new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
+        message: msg.message,
+        time: new Date().toISOString(),
+      })
+    );
+
+    socketRef.current?.emit("private-message", { to: msg.to, message: msg });
+    socketRef.current?.emit("new-chat", {
+      recipientId: msg.to,
+    });
+    setMessages((prev) => [...prev, msg]);
+  }, [sayHi, loadedConversation?.counterParty, conversationId]);
+
   const sendMessage = () => {
     if (!loadedConversation?.counterParty) return;
     if (!messageBody.message.trim()) return;
@@ -151,7 +186,9 @@ export default function ChatBox({
     );
 
     socketRef.current?.emit("private-message", { to: msg.to, message: msg });
-
+    socketRef.current?.emit("new-chat", {
+      recipientId: msg.to,
+    });
     setMessages((prev) => [...prev, msg]);
 
     setMessageBody({
@@ -162,6 +199,9 @@ export default function ChatBox({
       conversationId: "",
       time: "",
     });
+    setTimeout(() => {
+      refetchChatList();
+    }, 1000);
   };
 
   useEffect(() => {

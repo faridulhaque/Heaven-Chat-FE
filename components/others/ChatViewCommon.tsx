@@ -3,8 +3,11 @@
 import { Context } from "@/app/layout";
 import ChatViewLg from "@/components/chat-lg/ChatViewLg";
 import ChatViewSm from "@/components/chat-sm/ChatViewSm";
-import { useCheckIfBlockedQuery } from "@/services/queries/othersApi";
-import { CallStateType, UserPayload } from "@/services/types";
+import {
+  useCheckIfBlockedQuery,
+  useGetChatListQuery,
+} from "@/services/queries/othersApi";
+import { CallStateType, Chat, UserPayload } from "@/services/types";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import Loading from "./Loading";
@@ -17,6 +20,8 @@ export default function ChatViewCommon() {
   const { loggedInUser } = useContext(Context);
 
   const [chatOpen, setChatOpen] = useState(false);
+
+  const [sayHi, setSayHi] = useState("");
 
   const [onboardedUser, setOnboardedUser] = useState<UserPayload | null>(null);
   const value = useContext(Context);
@@ -40,8 +45,14 @@ export default function ChatViewCommon() {
       { skip: !onboardedUser?.userId || !value?.loggedInUser?.userId }
     );
 
+  const {
+    data: chatData,
+    isLoading: chatLoading,
+    refetch: refetchChatList,
+  } = useGetChatListQuery<any>("");
+  const chatList: Chat[] = chatData?.data;
+
   useEffect(() => {
-    console.log("SOCKET INIT");
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -57,7 +68,6 @@ export default function ChatViewCommon() {
     });
 
     if (socketRef.current && socketRef.current.connected) {
-      console.log("Socket already connected:", socketRef.current.id);
       return;
     }
 
@@ -73,8 +83,16 @@ export default function ChatViewCommon() {
       }
     });
 
+    const onNewChat = () => {
+      console.log("new chat arrived");
+      refetchChatList();
+    };
+    socketRef.current.on("new-chat", onNewChat);
+
     return () => {
       socketRef.current?.off("new-user");
+      socketRef.current?.off("new-chat", onNewChat);
+
       socketRef.current?.disconnect();
     };
   }, []);
@@ -84,15 +102,12 @@ export default function ChatViewCommon() {
     if (!socket) return;
 
     const onSignal = ({ from, data, callerName }: any) => {
-      console.log("from signal", from);
-      console.log("from data", data);
       if (data?.type === "offer") {
         setIncomingSignal({ from, data, callerName });
         setCallState("receiving");
         try {
-          console.log("ringtone above");
           if (ringToneRef.current) {
-            console.log("ringing");
+            // console.log("ringing");
             ringToneRef.current.muted = false;
             ringToneRef.current.play().catch(() => {});
           }
@@ -172,6 +187,11 @@ export default function ChatViewCommon() {
   return (
     <div>
       <ChatViewLg
+        sayHi={sayHi}
+        setSayHi={setSayHi}
+        chatList={chatList}
+        chatLoading={chatLoading}
+        refetchChatList={refetchChatList}
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
         setCalleeName={setCalleeName}

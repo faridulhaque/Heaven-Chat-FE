@@ -51,7 +51,6 @@ export default function OnboardingModal({
       name: userName,
       avatar,
     };
-    console.log("payload", payload);
 
     for (const key in payload) {
       if (!payload[key as keyof typeof payload]) {

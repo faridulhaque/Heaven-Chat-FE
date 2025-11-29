@@ -43,6 +43,8 @@ export default function ChatListItem({
     conversation?.conversationId,
   ]);
 
+  // console.log("loaded conversation", conversation);
+
   return (
     <>
       <div
@@ -70,7 +72,7 @@ export default function ChatListItem({
             )}
           </h2>
           <span className="opacity-70 text-xs truncate">
-            {lastMessageData?.message ?? conversation?.lastMessage ?? ""}
+            {conversation?.lastMessage ?? ""}
           </span>
         </div>
 
