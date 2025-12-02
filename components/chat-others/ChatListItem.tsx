@@ -53,7 +53,9 @@ export default function ChatListItem({
           setAi(false);
           setChatOpen?.(true);
         }}
-        className={`w-full h-16 flex items-center px-3 relative cursor-pointer 
+        className={`
+          border-white/10 border-y
+          w-full h-16 flex items-center px-3 relative cursor-pointer 
   hover:bg-[#2D2E34] ${selected ? "bg-[#33343A]" : "bg-transparent"}`}
       >
         <Image

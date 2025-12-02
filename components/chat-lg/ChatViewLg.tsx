@@ -103,8 +103,6 @@ export default function ChatViewLg({
     setSayHi("Hi");
   };
 
-  if (usersLoading) return <Loading></Loading>;
-
   return (
     <div className="hidden md:block">
       <div className="w-full sm:w-[95%] mx-auto h-screen flex gap-6">

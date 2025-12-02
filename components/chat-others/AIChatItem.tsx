@@ -22,7 +22,7 @@ export default function AIChatItem({
 
         setConversationId("");
       }}
-      className={`w-full h-16 flex items-center px-3 relative cursor-pointer 
+      className={` w-full h-16 flex items-center px-3 relative cursor-pointer 
   hover:bg-[#2D2E34] ${isAi ? "bg-[#33343A]" : "bg-transparent"}`}
     >
       <Image

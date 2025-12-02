@@ -184,7 +184,6 @@ export default function ChatViewCommon() {
     peerRef.current = null;
   };
 
-  if (blockCheck) return <Loading></Loading>;
 
   return (
     <div>

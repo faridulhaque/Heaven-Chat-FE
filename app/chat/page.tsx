@@ -6,7 +6,6 @@ function Page() {
     <RequireUser>
       <ChatViewCommon></ChatViewCommon>
     </RequireUser>
-    // <ChatViewCommon></ChatViewCommon>
   );
 }
 

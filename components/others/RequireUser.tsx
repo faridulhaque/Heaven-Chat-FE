@@ -33,7 +33,7 @@ const RequireUser = ({ children }: { children: React.ReactNode }) => {
     run();
   }, []);
 
-  if (!tokenChecked || validating) return <Loading />;
+  // if (!tokenChecked || validating) return <Loading />;
 
   return <>{children}</>;
 };
