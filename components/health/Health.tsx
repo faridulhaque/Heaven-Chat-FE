@@ -10,7 +10,7 @@ function Health() {
         const data = await res.json();
         console.log("res", data);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     };
     checkHealth();
