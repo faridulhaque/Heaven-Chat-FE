@@ -144,6 +144,7 @@ export default function ChatBox({
 
   useEffect(() => {
     if (!loadedConversation?.counterParty) return;
+    console.log('loaded conversation passed')
     if (!sayHi) return;
 
     const msg: TMessageDataFE = {
