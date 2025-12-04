@@ -146,6 +146,8 @@ export default function ChatBox({
     if (!loadedConversation?.counterParty) return;
     console.log('loaded conversation passed')
     if (!sayHi) return;
+    console.log('say hi passed')
+
 
     const msg: TMessageDataFE = {
       message: sayHi,
@@ -155,6 +157,8 @@ export default function ChatBox({
       conversationId,
       time: new Date().toISOString(),
     };
+
+    console.log('msg passed', msg)
 
     setLastMessages(
       new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
@@ -168,6 +172,7 @@ export default function ChatBox({
       recipientId: msg.to,
     });
     setMessages((prev) => [...prev, msg]);
+    console.log('set messages passed')
     setTimeout(() => {
       refetchChatList();
     }, 1000);
