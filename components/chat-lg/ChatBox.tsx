@@ -143,39 +143,40 @@ export default function ChatBox({
   }, [loggedInUser?.blocked, loadedConversation?.counterParty?.userId]);
 
   useEffect(() => {
+    console.log("say hi useEffect called");
     if (!loadedConversation?.counterParty) return;
-    console.log('loaded conversation passed')
-    if (!sayHi) return;
-    console.log('say hi passed')
-
-
-    const msg: TMessageDataFE = {
-      message: sayHi,
-      from: loggedInUser?.userId || "",
-      to: loadedConversation.counterParty.userId,
-      type: "text",
-      conversationId,
-      time: new Date().toISOString(),
-    };
-
-    console.log('msg passed', msg)
-
-    setLastMessages(
-      new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
-        message: msg.message,
+    console.log("loaded conversation passed");
+    if (sayHi) {
+      console.log("say hi passed");
+      const msg: TMessageDataFE = {
+        message: sayHi,
+        from: loggedInUser?.userId || "",
+        to: loadedConversation.counterParty.userId,
+        type: "text",
+        conversationId,
         time: new Date().toISOString(),
-      })
-    );
+      };
 
-    socketRef.current?.emit("private-message", { to: msg.to, message: msg });
-    socketRef.current?.emit("new-chat", {
-      recipientId: msg.to,
-    });
-    setMessages((prev) => [...prev, msg]);
-    console.log('set messages passed')
-    setTimeout(() => {
-      refetchChatList();
-    }, 1000);
+      console.log("msg passed", msg);
+
+      setLastMessages(
+        new Map<string, LastMessageValue>(lastMessages).set(conversationId, {
+          message: msg.message,
+          time: new Date().toISOString(),
+        })
+      );
+
+      socketRef.current?.emit("private-message", { to: msg.to, message: msg });
+      socketRef.current?.emit("new-chat", {
+        recipientId: msg.to,
+      });
+      setMessages((prev) => [...prev, msg]);
+      console.log("set messages passed");
+      setTimeout(() => {
+        refetchChatList();
+        setSayHi("");
+      }, 1000);
+    }
   }, [sayHi, loadedConversation?.counterParty, conversationId]);
 
   const sendMessage = () => {
@@ -213,7 +214,6 @@ export default function ChatBox({
     });
     setTimeout(() => {
       refetchChatList();
-      
     }, 1000);
   };
 
