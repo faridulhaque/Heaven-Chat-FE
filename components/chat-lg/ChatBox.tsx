@@ -172,9 +172,9 @@ export default function ChatBox({
       });
       setMessages((prev) => [...prev, msg]);
       console.log("set messages passed");
+      setSayHi("");
       setTimeout(() => {
         refetchChatList();
-        setSayHi("");
       }, 1000);
     }
   }, [sayHi, loadedConversation?.counterParty, conversationId]);
