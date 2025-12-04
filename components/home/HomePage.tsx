@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-
 export default function HomePage() {
   const [newUser, setNewUser] = useState<{
     email: string;
@@ -40,20 +39,24 @@ export default function HomePage() {
       return toast.error("This didn't work.");
     }
 
-    const res: any = await login({
-      email,
-    });
-    const token = res?.data?.data?.token;
-
-    if (token) {
-      toast.success("You have successfully logged in");
-      localStorage.setItem("token", token);
-      setToken(token);
-    } else {
-      setNewUser({
+    try {
+      const res: any = await login({
         email,
-        name,
       });
+      const token = res?.data?.data?.token;
+
+      if (token) {
+        toast.success("You have successfully logged in");
+        localStorage.setItem("token", token);
+        setToken(token);
+      } else {
+        setNewUser({
+          email,
+          name,
+        });
+      }
+    } catch (error) {
+      console.log("Onboarding failed", error);
     }
   };
 
@@ -77,7 +80,6 @@ export default function HomePage() {
   }, [token]);
 
   if (validating) return <Loading></Loading>;
-
 
   return (
     <div className="mx-auto" style={{ width: "95%" }}>
