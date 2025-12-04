@@ -104,14 +104,16 @@ export default function ChatViewSm({
     setSearchedData(filtered);
   }, [searchParam]);
 
-  const handleStartChat = async (recipientId: string) => {
+   const handleStartChat = async (recipientId: string) => {
     const res: any = await startChat({
       members: [recipientId, value.loggedInUser?.userId],
     });
+    
     setRecipientId(recipientId);
     setConversationId(res?.data?.data?.conversationId);
     setOnboardedUser(null);
     setChatList(true);
+    setSayHi("Hi");
   };
 
   return (

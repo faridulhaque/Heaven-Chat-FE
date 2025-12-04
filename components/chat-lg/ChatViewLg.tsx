@@ -92,10 +92,7 @@ export default function ChatViewLg({
     const res: any = await startChat({
       members: [recipientId, value.loggedInUser?.userId],
     });
-    // socketRef.current?.emit("new-chat", {
-    //   recipientId,
-    // });
-
+    
     setRecipientId(recipientId);
     setConversationId(res?.data?.data?.conversationId);
     setOnboardedUser(null);
