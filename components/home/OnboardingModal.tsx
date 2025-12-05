@@ -25,6 +25,7 @@ export default function OnboardingModal({
   const handleClickOutsideModal = (event: any) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       setNewUser(null);
+      document.body.style.overflowY = "";
     }
   };
 
@@ -39,7 +40,7 @@ export default function OnboardingModal({
   useEffect(() => {
     if (!newUser) {
       // setModalInfo(null)
-      document.body.style.overflowY = "scroll";
+      document.body.style.overflowY = "";
     } else {
       document.body.style.overflowY = "hidden";
     }

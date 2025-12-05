@@ -45,18 +45,23 @@ export default function HomePage() {
       });
       const token = res?.data?.data?.token;
 
+      console.log("res", res);
+
       if (token) {
         toast.success("You have successfully logged in");
         localStorage.setItem("token", token);
         setToken(token);
-      } else {
+      } else if (token === null) {
         setNewUser({
           email,
           name,
         });
+      } else {
+        toast.error("Failed to onboard");
       }
     } catch (error) {
       console.log("Onboarding failed", error);
+      toast.error("Failed to onboard");
     }
   };
 
